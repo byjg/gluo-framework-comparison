@@ -1,0 +1,6 @@
+{
+  "namespace": "App",
+  "composer_name": "byjg/gluo-product-demo",
+  "install_frontend": true,
+  "install_examples": false
+}
