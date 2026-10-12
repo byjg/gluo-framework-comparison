@@ -1,3 +1,8 @@
+---
+sidebar_position: 30
+title: Building it with Laravel
+---
+
 # Laravel
 
 Laravel 13 + Eloquent + the official React starter kit (Inertia, Fortify login) + Sail

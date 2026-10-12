@@ -1,3 +1,8 @@
+---
+sidebar_position: 10
+title: Feature by Feature
+---
+
 # Feature by feature
 
 How each part of the application is done, with the code that is actually in this

@@ -1,3 +1,8 @@
+---
+sidebar_position: 50
+title: Building it with Symfony (Docker template)
+---
+
 # Symfony — Docker template
 
 Symfony 8.1 + Doctrine ORM + Twig + form login, on the

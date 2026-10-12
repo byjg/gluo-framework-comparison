@@ -1,3 +1,8 @@
+---
+sidebar_position: 20
+title: Building it with Gluo
+---
+
 # Gluo
 
 byjg/gluo 7.0 + MicroOrm + JWT API, with the bundled React frontend, on Docker with
@@ -5,8 +10,8 @@ MySQL 8.0.
 
 Requirements: PHP >= 8.3, Composer, Docker.
 
-Sources: <https://opensource.byjg.com/docs/php/gluo/>,
-<https://opensource.byjg.com/docs/php/gluo/getting-started/unattended-setup> and the
+Sources: the [Gluo documentation](https://opensource.byjg.com/docs/php/gluo/), its
+[unattended setup guide](https://opensource.byjg.com/docs/php/gluo/getting-started/unattended-setup) and the
 `dev-guide` skill shipped inside the created project (`.claude/skills/dev-guide`).
 
 ## 1. Create the project

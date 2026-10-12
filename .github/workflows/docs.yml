@@ -1,0 +1,23 @@
+name: Documentation
+
+# This repository is a comparison, not a package: there is nothing to build, test or
+# release here. The only job publishes README.md and docs/ to https://opensource.byjg.com.
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - README.md
+      - docs/**
+      - .github/workflows/docs.yml
+  workflow_dispatch:
+
+jobs:
+  Documentation:
+    uses: byjg/byjg.github.io/.github/workflows/add-doc.yaml@master
+    with:
+      folder: php
+      project: ${{ github.event.repository.name }}
+    secrets:
+      DOC_TOKEN: ${{ secrets.DOC_TOKEN }}

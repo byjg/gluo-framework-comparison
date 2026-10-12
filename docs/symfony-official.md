@@ -1,3 +1,8 @@
+---
+sidebar_position: 40
+title: Building it with Symfony (official packages)
+---
+
 # Symfony — official packages only
 
 Symfony 8.1 + Doctrine ORM + Twig + form login, using only what Symfony ships or pulls
