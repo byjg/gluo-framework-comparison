@@ -83,7 +83,7 @@ use ByJG\WebRequest\HttpMethod;
 
 $request = RequestJson::build(
     new Uri('https://api.example.com/v1/products'),
-    HttpMethod::POST,
+    HttpMethod::Post,
     ['name' => 'Widget', 'price' => 9.99]       // array is json_encoded automatically
 );
 

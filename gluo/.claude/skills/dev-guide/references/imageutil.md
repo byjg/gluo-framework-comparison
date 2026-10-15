@@ -60,9 +60,9 @@ $img->rotate(45);   // arbitrary angle; fills corners with background color
 ```php
 use ByJG\ImageUtil\Enum\Flip;
 
-$img->flip(Flip::HORIZONTAL);
-$img->flip(Flip::VERTICAL);
-$img->flip(Flip::BOTH);
+$img->flip(Flip::Horizontal);
+$img->flip(Flip::Vertical);
+$img->flip(Flip::Both);
 ```
 
 ---
@@ -78,15 +78,15 @@ $stamp = ImageUtil::fromFile('/assets/watermark.png');
 
 $img->stampImage(
     $stamp,
-    StampPosition::BOTTOM_RIGHT,  // position
+    StampPosition::BottomRight,  // position
     10,                           // x padding from edge
     10,                           // y padding from edge
     70                            // opacity (0-100)
 );
 ```
 
-**`StampPosition` options:** `TOP_LEFT`, `TOP_CENTER`, `TOP_RIGHT`, `CENTER_LEFT`, `CENTER`,
-`CENTER_RIGHT`, `BOTTOM_LEFT`, `BOTTOM_CENTER`, `BOTTOM_RIGHT`
+**`StampPosition` options:** `TopLeft`, `TOP_CENTER`, `TopRight`, `CENTER_LEFT`, `CENTER`,
+`CENTER_RIGHT`, `BottomLeft`, `BOTTOM_CENTER`, `BottomRight`
 
 ---
 
@@ -103,7 +103,7 @@ $img->writeText(
     '/path/to/font.ttf',     // TrueType font path
     300,                     // max width (0 = no wrap)
     Color::fromHex('#ff0000'),
-    TextAlignment::LEFT      // LEFT, CENTER, RIGHT
+    TextAlignment::Left      // LEFT, CENTER, RIGHT
 );
 ```
 
