@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Security updates only (version updates are off). The frontend is written for Tailwind 3
+  # (tailwind.config.js, @tailwind directives); Tailwind 4 needs a migration, not a bump.
+  - package-ecosystem: npm
+    directory: /gluo/frontend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    ignore:
+      - dependency-name: tailwindcss
+        update-types: ["version-update:semver-major"]

@@ -695,7 +695,7 @@ Symfony column is the same for both builds unless a cell says otherwise.
 | Other templates | `templates/` | `resources/views/` | `templates/` | Gluo: e-mail templates and the terminal preload. Laravel: the single Blade page that hosts the React app. |
 | Tests | `tests/` | `tests/` | `tests/` | PHPUnit in all three. |
 | Command line | `gluo` | `artisan` | `bin/` | `./gluo`, `php artisan`, `bin/console`. Symfony's `bin/` also has `phpunit`. |
-| Project hooks for the framework tasks | `builder/` | `app/Console/`, `routes/console.php` | — | Gluo's `builder/Scripts.php` is where the built-in commands are customised; your own commands are listed in `config/commands.php`. Laravel and Symfony register commands as classes. |
+| Project hooks for the framework tasks | `builder/` | `app/Console/`, `routes/console.php` | — | Gluo's `builder/Scripts.php` is where the built-in commands are customised; your own commands are declared in `src/Command/Commands.php`. Laravel and Symfony register commands as classes. |
 | Cache, logs, sessions | — | `storage/`, `bootstrap/cache/` | `var/` | Gluo keeps no runtime folder in the project: the configuration cache goes to the system temp directory. |
 | Docker | `docker/`, `docker-compose.yml` | `compose.yaml` | `compose.yaml`, `compose.override.yaml` | Gluo ships its Dockerfiles in the project. Laravel's images live inside `vendor/laravel/sail`. Symfony official: service definitions only. Symfony template adds `Dockerfile`, `frankenphp/`, `compose.prod.yaml` and `.devcontainer/`. |
 | Translations | — | — | `translations/` | Created empty by Symfony. Laravel publishes `lang/` only on request. |

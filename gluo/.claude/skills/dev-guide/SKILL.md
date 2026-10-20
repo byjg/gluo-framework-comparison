@@ -516,7 +516,7 @@ Throw to return the right HTTP status:
 | `docker compose up -d` | Start MySQL + PHP (+ frontend) containers |
 | `docker compose down` | Stop containers |
 | `./gluo list` | List the built-in and project commands (`--check` validates them) |
-| `./gluo <name> [args]` | Run a project command declared in `config/commands.php` |
+| `./gluo <name> [args]` | Run a project command declared in `src/Command/Commands.php` |
 | `composer update` | Update PHP dependencies (live in vendor) |
 | `composer psalm` | Run static analysis |
 | `php85 vendor/bin/psalm` | Psalm fallback (if default is buggy) |
