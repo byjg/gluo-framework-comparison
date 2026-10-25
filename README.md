@@ -1,3 +1,7 @@
+---
+sidebar_category: gluo
+---
+
 # Gluo vs Laravel vs Symfony
 
 The same small full-stack application built with
