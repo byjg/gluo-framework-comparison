@@ -56,12 +56,12 @@ class ProductsTable extends Table
         $validator
             ->scalar('name')
             ->maxLength('name', 100)
-            ->requirePresence('name', 'create')
+            ->requirePresence('name')
             ->notEmptyString('name');
 
         $validator
             ->decimal('price')
-            ->requirePresence('price', 'create')
+            ->requirePresence('price')
             ->notEmptyString('price')
             ->greaterThanOrEqual('price', 0)
             ->lessThanOrEqual('price', 99999999.99);

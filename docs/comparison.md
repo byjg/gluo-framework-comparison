@@ -308,7 +308,7 @@ writes the migration, and from then on bake reads the **table**.
 | File size | 118 lines, 1 edited by hand | 16 lines, 2 written by hand | official: 114 lines, ~15 by hand. template: 63 lines, 7 by hand | Table 71 + Entity 33 lines, ~10 edited by hand | 49 lines, 6 edited by hand |
 | Type and length of each field | yes: `OA\Property(type, format, maxLength)`, generated from the column | no; they are in the migration | yes: `ORM\Column(length, precision, scale)`, generated | the length, as `maxLength` in the baked validation | no; they are in the migration |
 | Allowed range of a value | yes: `OA\Property(maximum, minimum)`, by hand | no; it is in the `FormRequest` | yes: `Assert\Range`, by hand | yes: `greaterThanOrEqual` / `lessThanOrEqual`, by hand | yes: `$validationRules`, by hand |
-| Required fields | yes: `OA\Schema(required: [...])`, generated from `NOT NULL` | no; `required` in the `FormRequest` | yes: `Assert\NotBlank`, by hand | yes: `requirePresence` + `notEmptyString`, baked from `NOT NULL` | yes: `required` in `$validationRules`, by hand |
+| Required fields | yes: `OA\Schema(required: [...])`, generated from `NOT NULL` | no; `required` in the `FormRequest` | yes: `Assert\NotBlank`, by hand | yes: `requirePresence` + `notEmptyString`, baked from `NOT NULL` (presence on create only; extended to updates by hand) | yes: `required` in `$validationRules`, by hand |
 | The same declaration validates requests | yes | — | yes (through the form) | yes (`patchEntity()`) | yes (every `insert()` / `update()`) |
 | The same declaration is published to API clients | yes, as the OpenAPI schema | — | no | no | no |
 
@@ -723,19 +723,20 @@ return [
 **Symfony** — the `#[Assert\...]` attributes shown in [6. Model](#6-model).
 
 **CakePHP** — `validationDefault()` in `src/Model/Table/ProductsTable.php`. The `name`
-rules and the presence of `price` are as bake read them from the table; the range is the
-hand-written part:
+rules and the presence of `price` are as bake read them from the table, except that bake
+requires the fields only when creating (`requirePresence('name', 'create')`), so an
+update could leave one out; the second argument is removed by hand, as is the range:
 
 ```php
 $validator
     ->scalar('name')
     ->maxLength('name', 100)
-    ->requirePresence('name', 'create')
+    ->requirePresence('name')
     ->notEmptyString('name');
 
 $validator
     ->decimal('price')
-    ->requirePresence('price', 'create')
+    ->requirePresence('price')
     ->notEmptyString('price')
     ->greaterThanOrEqual('price', 0)
     ->lessThanOrEqual('price', 99999999.99);
@@ -743,8 +744,9 @@ $validator
 
 **CodeIgniter** — the `$validationRules` shown in [6. Model](#6-model).
 
-All five end up enforcing the same rules: a name that is not empty and has at most 100
-characters, and a price between 0 and 99999999.99, both required.
+All five end up enforcing the same rules, on create and on update: a name that is not
+empty and has at most 100 characters, and a price between 0 and 99999999.99, both
+required.
 
 Gluo takes the types, the required fields, `maxLength` and `minLength` from the table when
 it generates the code: `name` is `varchar(100) not null` with no default, so it gets
@@ -796,7 +798,7 @@ CodeIgniter's are written by hand, like Laravel's and Gluo's.
 | | Gluo | Laravel | Symfony | CakePHP | CodeIgniter |
 |---|---|---|---|---|---|
 | Generated for the CRUD | 9 tests, passing | an empty test class | 5 tests, 4 marked incomplete, with invalid data | 5 controller tests and 1 table test, all marked incomplete, plus a fixture | none |
-| Written by hand here | 2 (soft delete; five invalid payloads, each on POST and PUT, sent to the server) | 7 | 7, replacing the generated ones | 8 (the 7, five invalid payloads, and a POST without the CSRF token) + 2 for the login, replacing the generated ones | 8 (the 7, five invalid payloads, and a POST without the CSRF token) |
+| Written by hand here | 2 (soft delete; five invalid payloads, each on POST and PUT, sent to the server) | 7 | 7, replacing the generated ones | 8 (the 7, five invalid payloads on both add and edit, and a POST without the CSRF token) + 2 for the login, replacing the generated ones | 8 (the 7, five invalid payloads, and a POST without the CSRF token) |
 | Style | in-process API calls | HTTP feature tests + Inertia assertions | browser-kit crawler over the HTML | integration tests through the whole middleware stack | feature tests through the filters |
 | Checks the response shape | yes, against the OpenAPI contract | only what each test asserts | only what each test asserts | only what each test asserts | only what each test asserts |
 | Database | a separate `localtest` schema | `testing` database, refreshed per test | `app_test` database | SQLite file (`tmp/tests.sqlite`), the skeleton's default; migrations run before the suite | SQLite in memory, the starter's default; migrations run per test class |

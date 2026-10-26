@@ -72,28 +72,40 @@ class ProductsControllerTest extends TestCase
         $this->assertSame(1, $this->fetchTable('Products')->find()->where(['name' => 'Mouse', 'price' => 19.90])->count());
     }
 
+    /** Each invalid payload, sent to create a product and to update the existing one. */
     public static function invalidProductProvider(): array
     {
-        return [
-            'name longer than the column' => [['name' => str_repeat('a', 101), 'price' => '1']],
-            'empty name' => [['name' => '', 'price' => '1']],
-            'negative price' => [['name' => 'Mouse', 'price' => '-5']],
-            'price above the column range' => [['name' => 'Mouse', 'price' => '100000000']],
-            'missing name' => [['price' => '1']],
+        $payloads = [
+            'name longer than the column' => ['name' => str_repeat('a', 101), 'price' => '1'],
+            'empty name' => ['name' => '', 'price' => '1'],
+            'negative price' => ['name' => 'Mouse', 'price' => '-5'],
+            'price above the column range' => ['name' => 'Mouse', 'price' => '100000000'],
+            'missing name' => ['price' => '1'],
         ];
+
+        $cases = [];
+        foreach (['add' => '/products/add', 'edit' => '/products/edit/1'] as $action => $url) {
+            foreach ($payloads as $name => $payload) {
+                $cases["$action, $name"] = [$url, $payload];
+            }
+        }
+
+        return $cases;
     }
 
     #[DataProvider('invalidProductProvider')]
-    public function testAProductIsValidated(array $payload): void
+    public function testAProductIsValidated(string $url, array $payload): void
     {
         $this->login();
 
-        $this->post('/products/add', $payload);
+        $this->post($url, $payload);
 
-        // The form is shown again, and nothing was stored.
+        // The form is shown again, and nothing was stored or changed.
         $this->assertNoRedirect();
         $this->assertResponseContains('could not be saved');
-        $this->assertSame(1, $this->fetchTable('Products')->find()->count());
+        $products = $this->fetchTable('Products');
+        $this->assertSame(1, $products->find()->count());
+        $this->assertSame('Keyboard', $products->get(1)->name);
     }
 
     public function testAProductCanBeUpdated(): void

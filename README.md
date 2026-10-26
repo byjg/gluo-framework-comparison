@@ -97,7 +97,7 @@ blank lines. Everything else came from a command.
 | **Laravel**            | migration columns 3, model 2, rules 2, controller ~30, route 1 | 2 React pages + type + menu (~140) | `.env` ports                                                   |
 | **Symfony** (official) | entity ~15, delete action 1, SQL filter 21                     | none (generated)                   | ~7 lines of YAML, the MySQL switch in 3 files                  |
 | **Symfony** (template) | entity 7                                                       | none (generated)                   | ~12 lines of YAML, the MySQL switch in 4 files, 1 template fix |
-| **CakePHP**            | behaviors 4, price range 2, login setup ~60 (service, middleware, component, 2 actions, password hashing, public pages), route 1 | login template 11, logout link 3, date inputs removed | MySQL compose ~13, datasource 4 |
+| **CakePHP**            | behaviors 4, price range 2, presence on update 2, login setup ~60 (service, middleware, component, 2 actions, password hashing, public pages), route 1 | login template 11, logout link 3, date inputs removed | MySQL compose ~13, datasource 4 |
 | **CodeIgniter**        | migration ~14, model settings 6, controller ~40, routes 2      | 2 views (~55)                      | MySQL compose ~13, `.env` 9, 5 config lines (e-mail, redirects, CSRF) |
 
 |                        | Composer packages (prod + dev) | Tests in the project |
@@ -106,7 +106,7 @@ blank lines. Everything else came from a command.
 | **Laravel**            | 100 + 38                       | 47                   |
 | **Symfony** (official) | 96 + 35                        | 8                    |
 | **Symfony** (template) | 98 + 35                        | 8                    |
-| **CakePHP**            | 22 + 71                        | 23                   |
+| **CakePHP**            | 22 + 71                        | 28                   |
 | **CodeIgniter**        | 5 + 30                         | 17                   |
 
 ## Can the code be generated from the model or the table?
