@@ -29,8 +29,5 @@ class Product extends Entity
     protected array $_accessible = [
         'name' => true,
         'price' => true,
-        'created_at' => true,
-        'updated_at' => true,
-        'deleted_at' => true,
     ];
 }

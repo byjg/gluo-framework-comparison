@@ -38,6 +38,11 @@ class ProductsTable extends Table
         $this->setTable('products');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
+
+        $this->addBehavior('Timestamp', [
+            'events' => ['Model.beforeSave' => ['created_at' => 'new', 'updated_at' => 'always']],
+        ]);
+        $this->addBehavior('Muffin/Trash.Trash', ['field' => 'deleted_at']);
     }
 
     /**
@@ -57,21 +62,9 @@ class ProductsTable extends Table
         $validator
             ->decimal('price')
             ->requirePresence('price', 'create')
-            ->notEmptyString('price');
-
-        $validator
-            ->dateTime('created_at')
-            ->requirePresence('created_at', 'create')
-            ->notEmptyDateTime('created_at');
-
-        $validator
-            ->dateTime('updated_at')
-            ->requirePresence('updated_at', 'create')
-            ->notEmptyDateTime('updated_at');
-
-        $validator
-            ->dateTime('deleted_at')
-            ->allowEmptyDateTime('deleted_at');
+            ->notEmptyString('price')
+            ->greaterThanOrEqual('price', 0)
+            ->lessThanOrEqual('price', 99999999.99);
 
         return $validator;
     }

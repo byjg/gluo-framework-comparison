@@ -2,100 +2,58 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\ProductModel;
+use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\RESTful\ResourcePresenter;
 
 class ProductController extends ResourcePresenter
 {
-    /**
-     * Present a view of resource objects.
-     *
-     * @return ResponseInterface
-     */
+    protected $modelName = ProductModel::class;
+
+    protected $helpers = ['form'];
+
     public function index()
     {
-        //
+        return view('products/index', [
+            'products' => $this->model->orderBy('name')->paginate(20),
+            'pager'    => $this->model->pager,
+        ]);
     }
 
-    /**
-     * Present a view to present a specific resource object.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
-    public function show($id = null)
-    {
-        //
-    }
-
-    /**
-     * Present a view to present a new single resource object.
-     *
-     * @return ResponseInterface
-     */
     public function new()
     {
-        //
+        return view('products/form', ['product' => null]);
     }
 
-    /**
-     * Process the creation/insertion of a new resource object.
-     * This should be a POST.
-     *
-     * @return ResponseInterface
-     */
-    public function create()
+    public function create(): RedirectResponse
     {
-        //
+        if (! $this->model->insert($this->request->getPost(['name', 'price']))) {
+            return redirect()->back()->withInput()->with('errors', $this->model->errors());
+        }
+
+        return redirect()->to('/products');
     }
 
-    /**
-     * Present a view to edit the properties of a specific resource object.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
     public function edit($id = null)
     {
-        //
+        $product = $this->model->find($id) ?? throw new \CodeIgniter\Exceptions\PageNotFoundException();
+
+        return view('products/form', ['product' => $product]);
     }
 
-    /**
-     * Process the updating, full or partial, of a specific resource object.
-     * This should be a POST.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
-    public function update($id = null)
+    public function update($id = null): RedirectResponse
     {
-        //
+        if (! $this->model->update($id, $this->request->getPost(['name', 'price']))) {
+            return redirect()->back()->withInput()->with('errors', $this->model->errors());
+        }
+
+        return redirect()->to('/products');
     }
 
-    /**
-     * Present a view to confirm the deletion of a specific resource object.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
-    public function remove($id = null)
+    public function delete($id = null): RedirectResponse
     {
-        //
-    }
+        $this->model->delete($id);
 
-    /**
-     * Process the deletion of a specific resource object.
-     *
-     * @param int|string|null $id
-     *
-     * @return ResponseInterface
-     */
-    public function delete($id = null)
-    {
-        //
+        return redirect()->to('/products');
     }
 }

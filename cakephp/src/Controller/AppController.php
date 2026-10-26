@@ -42,6 +42,8 @@ class AppController extends Controller
         parent::initialize();
 
         $this->loadComponent('Flash');
+        // Every action requires a logged-in user, unless a controller allows it.
+        $this->loadComponent('Authentication.Authentication');
 
         /*
          * Enable the following component for recommended CakePHP form protection settings.

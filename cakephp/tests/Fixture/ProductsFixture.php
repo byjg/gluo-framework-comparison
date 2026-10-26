@@ -20,11 +20,11 @@ class ProductsFixture extends TestFixture
         $this->records = [
             [
                 'id' => 1,
-                'name' => 'Lorem ipsum dolor sit amet',
-                'price' => 1.5,
+                'name' => 'Keyboard',
+                'price' => 49.9,
                 'created_at' => '2026-10-26 00:42:03',
                 'updated_at' => '2026-10-26 00:42:03',
-                'deleted_at' => '2026-10-26 00:42:03',
+                'deleted_at' => null,
             ],
         ];
         parent::init();

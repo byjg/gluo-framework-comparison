@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use Authentication\PasswordHasher\DefaultPasswordHasher;
 use Migrations\BaseSeed;
 
 /**
@@ -20,7 +21,14 @@ class UsersSeed extends BaseSeed
      */
     public function run(): void
     {
-        $data = [];
+        $now = date('Y-m-d H:i:s');
+        $data = [[
+            'email' => 'admin@example.com',
+            // A seed writes rows directly, so the password is hashed here, not by the entity.
+            'password' => (new DefaultPasswordHasher())->hash('!P4ssw0rdstr!'),
+            'created' => $now,
+            'modified' => $now,
+        ]];
 
         $table = $this->table('users');
         $table->insert($data)->save();

@@ -3,98 +3,56 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use Cake\Event\EventInterface;
+use Cake\Http\Response;
+
 /**
- * Users Controller
- *
- * @property \App\Model\Table\UsersTable $Users
+ * Login and logout. The plugin's Form authenticator checks the credentials; these actions
+ * only show the form and redirect.
  */
 class UsersController extends AppController
 {
     /**
-     * Index method
+     * The login form is the one page a guest can open.
      *
-     * @return \Cake\Http\Response|null|void Renders view
+     * @param \Cake\Event\EventInterface $event The event.
+     * @return void
      */
-    public function index()
+    public function beforeFilter(EventInterface $event): void
     {
-        $query = $this->Users->find();
-        $users = $this->paginate($query);
+        parent::beforeFilter($event);
 
-        $this->set(compact('users'));
+        $this->Authentication->allowUnauthenticated(['login']);
     }
 
     /**
-     * View method
+     * Show the login form, and redirect once the user is identified.
      *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @return \Cake\Http\Response|null
      */
-    public function view(?string $id = null)
+    public function login(): ?Response
     {
-        $user = $this->Users->get($id, contain: []);
-        $this->set(compact('user'));
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $user = $this->Users->newEmptyEntity();
+        $this->request->allowMethod(['get', 'post']);
+        $result = $this->Authentication->getResult();
+        if ($result?->isValid()) {
+            return $this->redirect($this->Authentication->getLoginRedirect() ?? '/products');
+        }
         if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+            $this->Flash->error(__('Invalid e-mail or password.'));
         }
-        $this->set(compact('user'));
+
+        return null;
     }
 
     /**
-     * Edit method
+     * Log out and go back to the login form.
      *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @return \Cake\Http\Response|null
      */
-    public function edit(?string $id = null)
+    public function logout(): ?Response
     {
-        $user = $this->Users->get($id, contain: []);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
-            if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
+        $this->Authentication->logout();
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
-        }
-        $this->set(compact('user'));
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id User id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete(?string $id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $user = $this->Users->get($id);
-        if ($this->Users->delete($user)) {
-            $this->Flash->success(__('The user has been deleted.'));
-        } else {
-            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
-        }
-
-        return $this->redirect(['action' => 'index']);
+        return $this->redirect(['action' => 'login']);
     }
 }

@@ -6,76 +6,38 @@ namespace App\Test\TestCase\Controller;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 
-/**
- * App\Controller\UsersController Test Case
- *
- * @link \App\Controller\UsersController
- */
 class UsersControllerTest extends TestCase
 {
     use IntegrationTestTrait;
 
-    /**
-     * Fixtures
-     *
-     * @var array<string>
-     */
     protected array $fixtures = [
         'app.Users',
     ];
 
-    /**
-     * Test index method
-     *
-     * @return void
-     * @link \App\Controller\UsersController::index()
-     */
-    public function testIndex(): void
+    protected function setUp(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        parent::setUp();
+
+        // Saved through the entity, so the password is hashed as in production.
+        $users = $this->fetchTable('Users');
+        $users->saveOrFail($users->newEntity(['email' => 'admin@example.com', 'password' => '!P4ssw0rdstr!']));
+        $this->enableCsrfToken();
     }
 
-    /**
-     * Test view method
-     *
-     * @return void
-     * @link \App\Controller\UsersController::view()
-     */
-    public function testView(): void
+    public function testTheRightPasswordLogsIn(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->post('/users/login', ['email' => 'admin@example.com', 'password' => '!P4ssw0rdstr!']);
+
+        $this->assertRedirect('/products');
+        $this->assertSession('admin@example.com', 'Auth.email');
     }
 
-    /**
-     * Test add method
-     *
-     * @return void
-     * @link \App\Controller\UsersController::add()
-     */
-    public function testAdd(): void
+    public function testAWrongPasswordIsRefused(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
+        $this->post('/users/login', ['email' => 'admin@example.com', 'password' => 'wrong']);
 
-    /**
-     * Test edit method
-     *
-     * @return void
-     * @link \App\Controller\UsersController::edit()
-     */
-    public function testEdit(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test delete method
-     *
-     * @return void
-     * @link \App\Controller\UsersController::delete()
-     */
-    public function testDelete(): void
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+        $this->assertNoRedirect();
+        $this->assertResponseContains('Invalid e-mail or password.');
+        $this->assertSessionNotHasKey('Auth');
     }
 }
