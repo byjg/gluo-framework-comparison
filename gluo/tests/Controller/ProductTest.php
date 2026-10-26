@@ -4,8 +4,6 @@ namespace Tests\Controller;
 
 use ByJG\RestServer\Exception\Error400Exception;
 use ByJG\AnyDataset\Db\DatabaseExecutor;
-use ByJG\ApiTools\Exception\NotMatchedException;
-use ByJG\ApiTools\Exception\RequiredArgumentNotFound;
 use ByJG\Config\Config;
 use ByJG\RestServer\Exception\Error404Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -99,8 +97,8 @@ class ProductTest extends BaseApiTestCase
         $request
             ->withPsr7Request($this->getPsr7Request())
             ->withMethod('PUT')
-            ->withPath("/product")
-            ->withRequestBody(json_encode($this->getSampleData(true) + ['id' => 1]))
+            ->withPath("/product/1")
+            ->withRequestBody(json_encode($this->getSampleData(true)))
             ->expectStatus(401)
         ;
         $this->sendRequest($request);
@@ -138,8 +136,8 @@ class ProductTest extends BaseApiTestCase
         $request
             ->withPsr7Request($this->getPsr7Request())
             ->withMethod('PUT')
-            ->withPath("/product")
-            ->withRequestBody(json_encode($this->getSampleData(true) + ['id' => 1]))
+            ->withPath("/product/1")
+            ->withRequestBody(json_encode($this->getSampleData(true)))
             ->expectStatus(403)
             ->withRequestHeader([
                 "Authorization" => "Bearer " . $result['token']
@@ -176,20 +174,64 @@ class ProductTest extends BaseApiTestCase
                 "Authorization" => "Bearer " . $result['token']
             ])
         ;
-        $body = $this->sendRequest($request);
+        $this->sendRequest($request);
 
+        // The key is in the path; the body has the same fields as the POST
         $request = new FakeApiRequester();
         $request
             ->withPsr7Request($this->getPsr7Request())
             ->withMethod('PUT')
-            ->withPath("/product")
-            ->withRequestBody($body->getBody()->getContents())
+            ->withPath("/product/" . $bodyAr['id'])
+            ->withRequestBody(json_encode($this->getSampleData(true)))
             ->expectStatus(200)
             ->withRequestHeader([
                 "Authorization" => "Bearer " . $result['token']
             ])
         ;
         $this->sendRequest($request);
+    }
+
+    /**
+     * The server refuses an invalid body with 400, not only the test client: these requests
+     * are sent without the OpenAPI schema, so the client does not stop them and they reach
+     * #[ValidateRequest] in the controller.
+     */
+    public function testInvalidPayloadIsRejectedByTheServer()
+    {
+        $result = json_decode($this->sendRequest(Credentials::requestLogin(Credentials::getAdminUser()))->getBody()->getContents(), true);
+        $sample = $this->getSampleData(true);
+        $collection = "/product";
+        $item = "/product/1";
+
+        $invalid = [
+            // The key is generated (POST) or taken from the path (PUT): the body cannot set it
+            'POST with the key in the body' => ['POST', $collection, $sample + ['id' => 1]],
+            'PUT with the key in the body' => ['PUT', $item, $sample + ['id' => 1]],
+            'POST without the required fields' => ['POST', $collection, (object)[]],
+            'PUT without the required fields' => ['PUT', $item, (object)[]],
+            'POST with an empty name' => ['POST', $collection, array_merge($sample, ['name' => ''])],
+            'PUT with an empty name' => ['PUT', $item, array_merge($sample, ['name' => ''])],
+        ];
+
+        foreach ($invalid as $case => [$method, $path, $payload]) {
+            $request = new FakeApiRequester();
+            $request
+                ->withPsr7Request($this->getPsr7Request())
+                ->withMethod($method)
+                ->withPath($path)
+                ->withRequestBody(json_encode($payload))
+                ->withRequestHeader([
+                    "Authorization" => "Bearer " . $result['token']
+                ])
+            ;
+
+            try {
+                $request->send();
+                $this->fail("$case was accepted");
+            } catch (Error400Exception) {
+                $this->addToAssertionCount(1);
+            }
+        }
     }
 
     public function testList()
@@ -269,6 +311,7 @@ class ProductTest extends BaseApiTestCase
 
         // ...but it is hidden from the API.
         $this->expectException(Error404Exception::class);
+        $this->expectExceptionMessage('Product not found');
         $this->sendRequest(
             (new FakeApiRequester())
                 ->withPsr7Request($this->getPsr7Request())
@@ -281,40 +324,75 @@ class ProductTest extends BaseApiTestCase
 
     public static function invalidProductProvider(): array
     {
-        return [
+        $cases = [
             'name longer than the column' => [['name' => str_repeat('a', 101), 'price' => 1], "is longer than maxLength 100"],
+            'empty name' => [['name' => '', 'price' => 1], "is shorter than minLength 1"],
             'negative price' => [['name' => 'Keyboard', 'price' => -5], "is less than minimum 0"],
             'price above the column range' => [['name' => 'Keyboard', 'price' => 100000000], "is greater than maximum 99999999.99"],
             'missing name' => [['price' => 1], "Required property 'name'"],
         ];
+
+        $result = [];
+        foreach (['POST', 'PUT'] as $method) {
+            foreach ($cases as $name => [$payload, $message]) {
+                $result["$method, $name"] = [$method, $payload, $message];
+            }
+        }
+        return $result;
     }
 
     /**
-     * The limits come from the OpenAPI spec: maxLength from the column, written by codegen,
-     * and the price range added by hand. The contract check refuses the payload before it is stored.
+     * Extends the generated testInvalidPayloadIsRejectedByTheServer, which covers the missing
+     * fields and the empty name, to every limit of the spec: maxLength and minLength from the
+     * column, written by codegen, and the price range added by hand, each on POST and PUT. The
+     * request is sent without the spec, so the test client does not stop it: it reaches
+     * #[ValidateRequest] in the controller, which answers 400, and nothing is written.
      */
     #[DataProvider('invalidProductProvider')]
-    public function testPostInvalidProductIsRejected(array $payload, string $message)
+    public function testInvalidProductIsRejectedByTheServer(string $method, array $payload, string $message)
     {
         $token = json_decode($this->sendRequest(Credentials::requestLogin(Credentials::getAdminUser()))->getBody()->getContents(), true)['token'];
         $executor = Config::get(DatabaseExecutor::class);
-        $before = $executor->getScalar('select count(*) from product');
+        $path = '/product';
+        if ($method === 'PUT') {
+            $path .= '/' . $executor->executeAndGetId("insert into product (name, price) values ('Keyboard', 49.9)");
+        }
+        $before = $executor->getIterator('select id, name, price from product order by id')->toArray();
+
+        $request = new FakeApiRequester();
+        $request
+            ->withPsr7Request($this->getPsr7Request())
+            ->withMethod($method)
+            ->withPath($path)
+            ->withRequestBody(json_encode($payload))
+            ->withRequestHeader(['Authorization' => "Bearer $token"]);
 
         try {
-            $this->sendRequest(
-                (new FakeApiRequester())
-                    ->withPsr7Request($this->getPsr7Request())
-                    ->withMethod('POST')
-                    ->withPath('/product')
-                    ->withRequestBody(json_encode($payload))
-                    ->withRequestHeader(['Authorization' => "Bearer $token"])
-                    ->expectStatus(200)
-            );
+            $request->send();
             $this->fail('The invalid product was accepted');
-        } catch (NotMatchedException | RequiredArgumentNotFound $ex) {
+        } catch (Error400Exception $ex) {
             $this->assertStringContainsString($message, $ex->getMessage());
         }
 
-        $this->assertSame($before, $executor->getScalar('select count(*) from product'));
+        $this->assertSame($before, $executor->getIterator('select id, name, price from product order by id')->toArray());
+    }
+
+    /**
+     * The model is checked against its own OpenAPI schema on every save, not only through the
+     * API: a command or a queue consumer that saves a product is held to the same rules.
+     */
+    public function testAnInvalidProductIsRejectedWhenSavedOutsideTheApi()
+    {
+        $executor = Config::get(DatabaseExecutor::class);
+        $count = $executor->getScalar('select count(*) from product');
+
+        try {
+            Product::new(['name' => 'Keyboard', 'price' => -5])->save();
+            $this->fail('The negative price was saved');
+        } catch (Error400Exception $ex) {
+            $this->assertStringContainsString('is less than minimum 0', $ex->getMessage());
+        }
+
+        $this->assertEquals($count, $executor->getScalar('select count(*) from product'));
     }
 }

@@ -12,7 +12,8 @@ Requirements: PHP >= 8.3, Composer, Docker.
 
 Sources: the [Gluo documentation](https://opensource.byjg.com/docs/php/gluo/), its
 [unattended setup guide](https://opensource.byjg.com/docs/php/gluo/getting-started/unattended-setup) and the
-`dev-guide` skill shipped inside the created project (`.claude/skills/dev-guide`).
+[`gluo-developer` skill](https://opensource.byjg.com/docs/ai/agent-skills/gluo-developer), which the created
+project declares in `.claude/settings.json`.
 
 ## 1. Create the project
 
@@ -50,11 +51,11 @@ API and the login screen on the frontend.
 
 ```bash
 docker compose up -d
-./gluo --env=dev migrate:reset
+php gluo --env=dev migrate:reset
 ```
 
-`./gluo` is the project's command line: `./gluo list` shows every command, and
-`./gluo --env=dev list --check` verifies that each one can run (environment,
+`php gluo` is the project's command line: `php gluo list` shows every command, and
+`php gluo --env=dev list --check` verifies that each one can run (environment,
 configuration, database connection). The older `composer migrate`, `composer codegen` and
 `composer openapi` scripts still work as aliases.
 
@@ -100,39 +101,43 @@ drop table product;
 ```
 
 ```bash
-./gluo --env=dev migrate:update
+php gluo --env=dev migrate:update
 ```
 
 ## 4. Generate the CRUD from the table
 
 ```bash
-./gluo --env=dev codegen:all --table=product --activerecord --save
-./gluo openapi
+php gluo --env=dev codegen:all --table=product --activerecord --save
+php gluo openapi
 ```
 
 `codegen` reads the `product` table and writes, complete and working:
 
-- `src/Model/Product.php` — fields, types, OpenAPI schema, with `maxLength: 100` taken
-  from the `varchar(100)` column; it detected the three date columns and added the
-  `OaCreatedAt` / `OaUpdatedAt` / `OaDeletedAt` traits
+- `src/Model/Product.php` — fields, types, OpenAPI schema, with `maxLength: 100` and
+  `minLength: 1` taken from the `varchar(100) not null` column (no default, so an empty
+  name is refused like a missing one); the key marked `readOnly`, since the database
+  generates it; `validator: SchemaValidator::class`, so every save is checked against that
+  schema; and, from the three date columns, the `OaCreatedAt` / `OaUpdatedAt` / `OaDeletedAt`
+  traits
 - `src/Controller/ProductController.php` — `GET /product/{id}`, `GET /product` (paging
-  and `?orderBy=`), `POST /product`, `PUT /product`, all JWT-protected and validated
+  and `?orderBy=`), `POST /product`, `PUT /product/{id}` (the same body as the `POST`), all JWT-protected and validated
   against the OpenAPI schema; writes require the `admin` role
-- `tests/Controller/ProductTest.php` — 9 tests that pass as generated
+- `tests/Controller/ProductTest.php` — 10 tests that pass as generated, including one that
+  sends invalid payloads to the server
 
 `--activerecord` is the two-file pattern (Model + Controller). Without it, codegen
 writes the Repository pattern instead (Model + Repository + Service + Controller and
 their DI bindings). A single component is `codegen:model`, `codegen:controller`,
 `codegen:test`, and so on.
 
-`./gluo openapi` rebuilds `public/docs/openapi.json`, which is the routing table —
+`php gluo openapi` rebuilds `public/docs/openapi.json`, which is the routing table —
 without it the new endpoints answer 404.
 
 ## 5. Hand edits
 
 **Delete endpoint** — codegen does not write one. Add `deleteProduct` to
-`src/Controller/ProductController.php`; the body is three statements, the rest is
-OpenAPI attributes:
+`src/Controller/ProductController.php`; the body is one line, the rest is OpenAPI
+attributes:
 
 ```php
 #[OA\Delete(path: "/product/{id}", security: [["jwt-token" => []]], tags: ["Product"])]
@@ -142,46 +147,49 @@ OpenAPI attributes:
 #[RequireRole(User::ROLE_ADMIN)]
 public function deleteProduct(HttpResponse $response, HttpRequest $request): void
 {
-    $model = Product::get($request->attribute('id'));
-
-    if (is_null($model)) {
-        throw new Error404Exception("Product not found");
-    }
-
-    $model->delete();
+    Product::getOrFail($request->attribute('id'))->delete();
 }
 ```
+
+`getOrFail()` comes from Gluo's `ActiveRecord` trait, which codegen put on the model: it returns
+the product or answers 404 `"Product not found"`, like Laravel's `findOrFail()`. The generated
+`GET` and `PUT` use it the same way.
 
 Because the model has the `OaDeletedAt` trait, `delete()` sets `deleted_at` and the row
 disappears from `get()` / `all()`.
 
 **Price range** — codegen takes the length of `name` from the column, but a column type
-does not say which values a price may take. Add `minimum: 0, maximum: 99999999.99` to
+does not say which values a price may take. Add `maximum: 99999999.99, minimum: 0` to
 the `price` property in two places: the request body of `postProduct` in the controller
 and the property in `src/Model/Product.php` (the schema `putProduct` validates against).
 
 ```php
-new OA\Property(property: "price", type: "number", format: "double", minimum: 0, maximum: 99999999.99),
+new OA\Property(property: "price", type: "number", format: "double", maximum: 99999999.99, minimum: 0),
 ```
 
-Run `./gluo openapi` again. The API now answers 400 to a name over 100 characters or a
-price outside the range, on create and on update, before anything reaches the database.
+Run `php gluo openapi` again. The API now answers 400 to an empty name, a name over 100
+characters or a price outside the range, on create and on update, before anything reaches
+the database.
 
-**Tests** — add `testSoftDelete` and `testPostInvalidProductIsRejected` to
-`tests/Controller/ProductTest.php`.
+**Tests** — add `testSoftDelete`, `testInvalidProductIsRejectedByTheServer` and
+`testAnInvalidProductIsRejectedWhenSavedOutsideTheApi` to `tests/Controller/ProductTest.php`.
+The second extends the generated invalid-payload test to every limit: it sends five invalid
+payloads, on `POST` and `PUT`, to the server, and checks the 400 and that the table did not
+change. The third saves an invalid product directly, as a command would, and checks that the
+model's own schema refuses it.
 
 **Frontend** — codegen covers the API only; the screen is written by hand:
 
-- `frontend/src/pages/Products.jsx` — table, create/edit modal and delete, using the
-  bundled `api` client and `ui` components
+- `frontend/src/pages/Products.jsx` — table sorted by name, paging, create/edit modal and
+  delete, using the bundled `api` client and `ui` components (including `Pagination`)
 - `frontend/src/App.jsx` — `<Route path="/products" element={<Products />} />`
 - `frontend/src/components/AppNav.jsx` — the `Products` menu entry
 
 ## 6. Test and run
 
 ```bash
-./gluo --env=dev list --check
-composer test
+php gluo --env=dev list --check
+php gluo test
 composer psalm
 docker compose up -d --build frontend
 ```
@@ -199,7 +207,7 @@ Stop with `docker compose down` (add `-v` to drop the database volume).
 | GET | `/product` | JWT | list; `?page=`, `?size=`, `?orderBy=price desc,name` |
 | GET | `/product/{id}` | JWT | product, 404 if missing or deleted |
 | POST | `/product` | JWT, admin | created product, 400 on validation |
-| PUT | `/product` | JWT, admin | updates the product whose `id` is in the body |
+| PUT | `/product/{id}` | JWT, admin | updates the product; the body has the same fields as the `POST` |
 | DELETE | `/product/{id}` | JWT, admin | soft delete (sets `deleted_at`) |
 
 Frontend: `/login`, `/dashboard`, `/profile`, `/products`.
@@ -208,5 +216,5 @@ Frontend: `/login`, `/dashboard`, `/profile`, `/products`.
 
 | | |
 |---|---|
-| Generated by commands | project, Docker, login API + login/profile screens, model, controller with 4 endpoints, 9 tests, OpenAPI spec and routes |
+| Generated by commands | project, Docker, login API + login/profile screens, model, controller with 4 endpoints, 10 tests, OpenAPI spec and routes |
 | Written by hand | the SQL migration (up + down), the delete endpoint, the price range (2 attributes), 2 tests, 1 React page + route + menu entry |

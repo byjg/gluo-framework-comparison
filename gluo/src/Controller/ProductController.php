@@ -59,13 +59,7 @@ class ProductController
     #[RequireAuthenticated]
     public function getProduct(HttpResponse $response, HttpRequest $request): void
     {
-        $model = Product::get($request->attribute('id'));
-
-        if (is_null($model)) {
-            throw new Error404Exception("Product not found");
-        }
-
-        $response->write($model);
+        $response->write(Product::getOrFail($request->attribute('id')));
     }
 
     /**
@@ -156,8 +150,8 @@ class ProductController
             required: [ "name", "price" ],
             properties: [
 
-                new OA\Property(property: "name", type: "string", format: "string", maxLength: 100),
-                new OA\Property(property: "price", type: "number", format: "double", minimum: 0, maximum: 99999999.99),
+                new OA\Property(property: "name", type: "string", format: "string", maxLength: 100, minLength: 1),
+                new OA\Property(property: "price", type: "number", format: "double", maximum: 99999999.99, minimum: 0),
             ]
         )
     )]
@@ -214,16 +208,32 @@ class ProductController
      * @throws ReflectionException
      */
     #[OA\Put(
-        path: "/product",
+        path: "/product/{id}",
         security: [
             ["jwt-token" => []]
         ],
         tags: ["Product"]
     )]
+    #[OA\Parameter(
+        name: "id",
+        in: "path",
+        required: true,
+        schema: new OA\Schema(
+            type: "integer",
+            format: "int32"
+        )
+    )]
     #[OA\RequestBody(
         description: "The object Product to be updated",
         required: true,
-        content: new OA\JsonContent(ref: "#/components/schemas/Product")
+        content: new OA\JsonContent(
+            required: [ "name", "price" ],
+            properties: [
+
+                new OA\Property(property: "name", type: "string", format: "string", maxLength: 100, minLength: 1),
+                new OA\Property(property: "price", type: "number", format: "double", maximum: 99999999.99, minimum: 0),
+            ]
+        )
     )]
     #[OA\Response(
         response: 200,
@@ -238,16 +248,10 @@ class ProductController
     #[ValidateRequest]
     public function putProduct(HttpResponse $response, HttpRequest $request): void
     {
-        $payload = ValidateRequest::getPayload();
+        $model = Product::getOrFail($request->attribute('id'));
 
-        $model = Product::get($payload['id'] ?? null);
-
-        if (is_null($model)) {
-            throw new Error404Exception("Product not found");
-        }
-
-        // Update model with payload using fill() method
-        $model->fill($payload);
+        // The key comes from the path; the body has only the writable fields
+        $model->fill(ValidateRequest::getPayload());
         $model->save();
     }
 
@@ -285,13 +289,7 @@ class ProductController
     #[RequireRole(User::ROLE_ADMIN)]
     public function deleteProduct(HttpResponse $response, HttpRequest $request): void
     {
-        $model = Product::get($request->attribute('id'));
-
-        if (is_null($model)) {
-            throw new Error404Exception("Product not found");
-        }
-
-        $model->delete();
+        Product::getOrFail($request->attribute('id'))->delete();
     }
 
 }
