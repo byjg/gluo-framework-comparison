@@ -12,7 +12,8 @@ Requirements: PHP >= 8.3, Composer, Docker.
 
 Sources: the [Gluo documentation](https://opensource.byjg.com/docs/php/gluo/), its
 [unattended setup guide](https://opensource.byjg.com/docs/php/gluo/getting-started/unattended-setup) and the
-`dev-guide` skill shipped inside the created project (`.claude/skills/dev-guide`).
+[`gluo-developer` skill](https://opensource.byjg.com/docs/ai/agent-skills/gluo-developer), which the created
+project declares in `.claude/settings.json`.
 
 ## 1. Create the project
 
