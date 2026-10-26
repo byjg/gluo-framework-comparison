@@ -354,6 +354,73 @@
                     }
                 ]
             },
+            "put": {
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Update an existing Product",
+                "operationId": "PUT::/product/{id}::App\\Controller\\ProductController::putProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "The object Product to be updated",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "price"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "format": "string",
+                                        "maxLength": 100,
+                                        "minLength": 1
+                                    },
+                                    "price": {
+                                        "type": "number",
+                                        "format": "double",
+                                        "maximum": 99999999.99,
+                                        "minimum": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Nothing to return"
+                    },
+                    "401": {
+                        "description": "Not Authorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/error"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "jwt-token": []
+                    }
+                ]
+            },
             "delete": {
                 "tags": [
                     "Product"
@@ -442,44 +509,6 @@
                                 }
                             }
                         }
-                    },
-                    "401": {
-                        "description": "Not Authorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/error"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "jwt-token": []
-                    }
-                ]
-            },
-            "put": {
-                "tags": [
-                    "Product"
-                ],
-                "summary": "Update an existing Product",
-                "operationId": "PUT::/product::App\\Controller\\ProductController::putProduct",
-                "requestBody": {
-                    "description": "The object Product to be updated",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Product"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Nothing to return"
                     },
                     "401": {
                         "description": "Not Authorized",
@@ -748,25 +777,29 @@
                             "string",
                             "null"
                         ],
-                        "format": "date-time"
+                        "format": "date-time",
+                        "readOnly": true
                     },
                     "updatedAt": {
                         "type": [
                             "string",
                             "null"
                         ],
-                        "format": "date-time"
+                        "format": "date-time",
+                        "readOnly": true
                     },
                     "deletedAt": {
                         "type": [
                             "string",
                             "null"
                         ],
-                        "format": "date-time"
+                        "format": "date-time",
+                        "readOnly": true
                     },
                     "id": {
                         "type": "integer",
-                        "format": "int32"
+                        "format": "int32",
+                        "readOnly": true
                     },
                     "name": {
                         "type": "string",
@@ -796,21 +829,24 @@
                             "string",
                             "null"
                         ],
-                        "format": "date-time"
+                        "format": "date-time",
+                        "readOnly": true
                     },
                     "updatedAt": {
                         "type": [
                             "string",
                             "null"
                         ],
-                        "format": "date-time"
+                        "format": "date-time",
+                        "readOnly": true
                     },
                     "deletedAt": {
                         "type": [
                             "string",
                             "null"
                         ],
-                        "format": "date-time"
+                        "format": "date-time",
+                        "readOnly": true
                     },
                     "userid": {
                         "type": "string",

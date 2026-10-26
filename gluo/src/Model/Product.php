@@ -5,12 +5,13 @@ namespace App\Model;
 use ByJG\MicroOrm\Attributes\FieldAttribute;
 use ByJG\MicroOrm\Attributes\FieldUuidAttribute;
 use ByJG\MicroOrm\Attributes\TableAttribute;
-use ByJG\MicroOrm\Attributes\TableMySqlUuidPKAttribute;
+use ByJG\MicroOrm\Attributes\TableUuidPKAttribute;
 use ByJG\MicroOrm\Literal\LiteralInterface;
 use ByJG\MicroOrm\Literal\HexUuidLiteral;
 use ByJG\MicroOrm\Query;
-use ByJG\MicroOrm\Trait\ActiveRecord;
+use ByJG\Gluo\Trait\ActiveRecord;
 use RuntimeException;
+use ByJG\Gluo\Util\SchemaValidator;
 use OpenApi\Attributes as OA;
 use ByJG\Gluo\Trait\OaCreatedAt;
 use ByJG\Gluo\Trait\OaUpdatedAt;
@@ -22,7 +23,7 @@ use ByJG\Gluo\Trait\OaDeletedAt;
  * @package App\Model
  */
 #[OA\Schema(required: ["id", "name", "price"], type: "object", xml: new OA\Xml(name: "Product"))]
-#[TableAttribute("product")]
+#[TableAttribute("product", validator: SchemaValidator::class)]
 class Product
 {
     // Add the ActiveRecord trait to enable Active Record pattern
@@ -37,7 +38,7 @@ class Product
     /**
      * @var int|null
      */
-    #[OA\Property(type: "integer", format: "int32")]
+    #[OA\Property(type: "integer", format: "int32", readOnly: true)]
     #[FieldAttribute(primaryKey: true, fieldName: "id")]
     protected int|null $id = null;
 

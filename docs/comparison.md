@@ -309,14 +309,14 @@ writes the migration, and from then on bake reads the **table**.
 | Type and length of each field | yes: `OA\Property(type, format, maxLength)`, generated from the column | no; they are in the migration | yes: `ORM\Column(length, precision, scale)`, generated | the length, as `maxLength` in the baked validation | no; they are in the migration |
 | Allowed range of a value | yes: `OA\Property(maximum, minimum)`, by hand | no; it is in the `FormRequest` | yes: `Assert\Range`, by hand | yes: `greaterThanOrEqual` / `lessThanOrEqual`, by hand | yes: `$validationRules`, by hand |
 | Required fields | yes: `OA\Schema(required: [...])`, generated from `NOT NULL` | no; `required` in the `FormRequest` | yes: `Assert\NotBlank`, by hand | yes: `requirePresence` + `notEmptyString`, baked from `NOT NULL` (presence on create only; extended to updates by hand) | yes: `required` in `$validationRules`, by hand |
-| The same declaration validates requests | yes | — | yes (through the form) | yes (`patchEntity()`) | yes (every `insert()` / `update()`) |
+| The same declaration validates requests | yes, and every `save()` (`SchemaValidator`) | — | yes (through the form) | yes (`patchEntity()`) | yes (every `insert()` / `update()`) |
 | The same declaration is published to API clients | yes, as the OpenAPI schema | — | no | no | no |
 
 ### Model patterns each one supports
 
 | | Gluo (MicroOrm) | Laravel (Eloquent) | Symfony (Doctrine) | CakePHP (ORM) | CodeIgniter (Model) |
 |---|---|---|---|---|---|
-| ActiveRecord | yes: `use ActiveRecord` on the model, then `Product::get($id)`, `$product->save()` | yes, and it is the only built-in pattern | no | no; entities do not save themselves | no; the model saves arrays or entities |
+| ActiveRecord | yes: `use ActiveRecord` on the model, then `Product::getOrFail($id)` (404 when missing), `$product->save()` | yes, and it is the only built-in pattern | no | no; entities do not save themselves | no; the model saves arrays or entities |
 | Repository | yes: Model + Repository + Service, bound in the DI config. The model's attributes build a Data Mapper, which both patterns use ([Choosing a Pattern](https://opensource.byjg.com/docs/php/micro-orm/patterns)) | not built in; you write the layer yourself on top of Eloquent | yes, with Data Mapper: plain entities, the `EntityManager` persists them, one repository class per entity for queries | yes: the `ProductsTable` finds and saves `Product` entities | a table gateway rather than a repository: one `Model` per table, with the queries and the rules |
 | Choice per entity | yes, both can be used in the same project | — | — | — | — |
 | Generator | both: `php gluo codegen:all` writes the Repository pattern, `--activerecord` the other | `make:model` (ActiveRecord) | `make:entity` writes the entity and its repository | `bake model` writes the table and the entity, from the database | `make:model` (empty) |
@@ -365,11 +365,13 @@ same feature.
 **Gluo** — `src/Model/Product.php`. Each field carries two attributes: `FieldAttribute`
 maps it to the column, and `OA\Property` declares its type, length and range. Everything
 is as `codegen` wrote it, including `maxLength: 100` and `minLength: 1` taken from
-`varchar(100) not null`, except the price range, which was added by hand:
+`varchar(100) not null`, the key marked `readOnly` (the database generates it), and the
+validator that checks the model against this schema on every save, except the price range,
+which was added by hand:
 
 ```php
 #[OA\Schema(required: ["id", "name", "price"], type: "object", xml: new OA\Xml(name: "Product"))]
-#[TableAttribute("product")]
+#[TableAttribute("product", validator: SchemaValidator::class)]
 class Product
 {
     use ActiveRecord;
@@ -377,7 +379,7 @@ class Product
     use OaUpdatedAt;
     use OaDeletedAt;
 
-    #[OA\Property(type: "integer", format: "int32")]
+    #[OA\Property(type: "integer", format: "int32", readOnly: true)]
     #[FieldAttribute(primaryKey: true, fieldName: "id")]
     protected int|null $id = null;
 
@@ -688,7 +690,7 @@ no generated filter parameter.
 | | Gluo | Laravel | Symfony | CakePHP | CodeIgniter |
 |---|---|---|---|---|---|
 | Declared on | the model properties and the endpoint's request body, as OpenAPI attributes | a `FormRequest` class | the entity properties | `validationDefault()` in the table class | `$validationRules` on the model |
-| Enforced by | `#[ValidateRequest]` | type-hinting the request in the action | the form component | `patchEntity()`, before `save()` | every `insert()` / `update()` |
+| Enforced by | `#[ValidateRequest]` on the request, and `SchemaValidator` on every `save()` | type-hinting the request in the action | the form component | `patchEntity()`, before `save()` | every `insert()` / `update()` |
 | Written by | codegen: types, required fields and lengths, from the table. You: value ranges | you | you | bake: required fields and lengths, from the table. You: value ranges | you |
 | Failure | 400 JSON | redirect back with errors (422 for JSON requests) | 422, form re-rendered | 200, form re-rendered with the errors | redirect back with the errors and the old input |
 
@@ -764,6 +766,13 @@ each answered with 400, and the table is unchanged. The requests are sent withou
 OpenAPI spec on the client side; otherwise the test client itself would refuse them and
 the server would never be exercised.
 
+The model is checked against the same schema again when it is saved, whoever saves it: a
+command or a queue consumer that writes a product with a negative price gets the same 400,
+and nothing is written (`testAnInvalidProductIsRejectedWhenSavedOutsideTheApi`). That is the
+place CakePHP and CodeIgniter keep their rules too, in the table class and in the model;
+Laravel's `FormRequest` and Symfony's form only check what comes through a request. In all
+five, a write that bypasses the model (a query builder update, raw SQL) is not checked.
+
 The same schema is what Swagger UI publishes, so the documented limits and the enforced
 ones cannot drift apart.
 
@@ -797,8 +806,8 @@ CodeIgniter's are written by hand, like Laravel's and Gluo's.
 
 | | Gluo | Laravel | Symfony | CakePHP | CodeIgniter |
 |---|---|---|---|---|---|
-| Generated for the CRUD | 9 tests, passing | an empty test class | 5 tests, 4 marked incomplete, with invalid data | 5 controller tests and 1 table test, all marked incomplete, plus a fixture | none |
-| Written by hand here | 2 (soft delete; five invalid payloads, each on POST and PUT, sent to the server) | 7 | 7, replacing the generated ones | 8 (the 7, five invalid payloads on both add and edit, and a POST without the CSRF token) + 2 for the login, replacing the generated ones | 8 (the 7, five invalid payloads, and a POST without the CSRF token) |
+| Generated for the CRUD | 10 tests, passing | an empty test class | 5 tests, 4 marked incomplete, with invalid data | 5 controller tests and 1 table test, all marked incomplete, plus a fixture | none |
+| Written by hand here | 3 (soft delete; five invalid payloads, each on POST and PUT, sent to the server; an invalid save outside the API) | 7 | 7, replacing the generated ones | 8 (the 7, five invalid payloads on both add and edit, and a POST without the CSRF token) + 2 for the login, replacing the generated ones | 8 (the 7, five invalid payloads, and a POST without the CSRF token) |
 | Style | in-process API calls | HTTP feature tests + Inertia assertions | browser-kit crawler over the HTML | integration tests through the whole middleware stack | feature tests through the filters |
 | Checks the response shape | yes, against the OpenAPI contract | only what each test asserts | only what each test asserts | only what each test asserts | only what each test asserts |
 | Database | a separate `localtest` schema | `testing` database, refreshed per test | `app_test` database | SQLite file (`tmp/tests.sqlite`), the skeleton's default; migrations run before the suite | SQLite in memory, the starter's default; migrations run per test class |

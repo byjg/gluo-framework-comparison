@@ -17,20 +17,29 @@ export default function Products() {
   const [size, setSize] = useState(20);
   const [descending, setDescending] = useState(false);
 
-  const load = async () => {
+  // Every load goes through the effect below: it uses the current page, size and order, and
+  // aborts the previous request, so a response for a page the user has left cannot
+  // overwrite the newer one. A save or a delete asks for a reload with reload().
+  const [reloadKey, setReloadKey] = useState(0);
+  const reload = () => setReloadKey((key) => key + 1);
+
+  const load = async (signal) => {
     setError('');
     try {
-      const params = new URLSearchParams({ page, size, orderBy: descending ? 'name desc' : 'name' });
-      const data = await api.request(`/product?${params}`, { method: 'GET' });
+      const params = new URLSearchParams({ page, size, orderBy: descending ? 'name desc,id' : 'name,id' });
+      const data = await api.request(`/product?${params}`, { method: 'GET', signal });
       setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
+      if (signal.aborted) return;
       setError(err.message);
     }
   };
 
   useEffect(() => {
-    load();
-  }, [page, size, descending]);
+    const controller = new AbortController();
+    load(controller.signal);
+    return () => controller.abort();
+  }, [page, size, descending, reloadKey]);
 
   const changeSize = (newSize) => {
     setSize(newSize);
@@ -50,12 +59,12 @@ export default function Products() {
     try {
       const payload = { name: form.name.trim(), price: Number(form.price) };
       if (editing) {
-        await api.putJson('/product', { id: editing.id, ...payload });
+        await api.putJson(`/product/${editing.id}`, payload);
       } else {
         await api.postJson('/product', payload);
       }
       setModalOpen(false);
-      await load();
+      reload();
     } catch (err) {
       setFormError(err.message);
     }
@@ -65,7 +74,7 @@ export default function Products() {
     setError('');
     try {
       await api.request(`/product/${product.id}`, { method: 'DELETE' });
-      await load();
+      reload();
     } catch (err) {
       setError(err.message);
     }
