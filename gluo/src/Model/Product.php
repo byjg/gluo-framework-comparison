@@ -44,14 +44,14 @@ class Product
     /**
      * @var string|null
      */
-    #[OA\Property(type: "string", format: "string", maxLength: 100)]
+    #[OA\Property(type: "string", format: "string", maxLength: 100, minLength: 1)]
     #[FieldAttribute(fieldName: "name")]
     protected string|null $name = null;
 
     /**
      * @var float|null
      */
-    #[OA\Property(type: "number", format: "double", minimum: 0, maximum: 99999999.99)]
+    #[OA\Property(type: "number", format: "double", maximum: 99999999.99, minimum: 0)]
     #[FieldAttribute(fieldName: "price")]
     protected float|null $price = null;
 

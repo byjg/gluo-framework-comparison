@@ -50,11 +50,11 @@ API and the login screen on the frontend.
 
 ```bash
 docker compose up -d
-./gluo --env=dev migrate:reset
+php gluo --env=dev migrate:reset
 ```
 
-`./gluo` is the project's command line: `./gluo list` shows every command, and
-`./gluo --env=dev list --check` verifies that each one can run (environment,
+`php gluo` is the project's command line: `php gluo list` shows every command, and
+`php gluo --env=dev list --check` verifies that each one can run (environment,
 configuration, database connection). The older `composer migrate`, `composer codegen` and
 `composer openapi` scripts still work as aliases.
 
@@ -100,20 +100,21 @@ drop table product;
 ```
 
 ```bash
-./gluo --env=dev migrate:update
+php gluo --env=dev migrate:update
 ```
 
 ## 4. Generate the CRUD from the table
 
 ```bash
-./gluo --env=dev codegen:all --table=product --activerecord --save
-./gluo openapi
+php gluo --env=dev codegen:all --table=product --activerecord --save
+php gluo openapi
 ```
 
 `codegen` reads the `product` table and writes, complete and working:
 
-- `src/Model/Product.php` — fields, types, OpenAPI schema, with `maxLength: 100` taken
-  from the `varchar(100)` column; it detected the three date columns and added the
+- `src/Model/Product.php` — fields, types, OpenAPI schema, with `maxLength: 100` and
+  `minLength: 1` taken from the `varchar(100) not null` column (no default, so an empty
+  name is refused like a missing one); it detected the three date columns and added the
   `OaCreatedAt` / `OaUpdatedAt` / `OaDeletedAt` traits
 - `src/Controller/ProductController.php` — `GET /product/{id}`, `GET /product` (paging
   and `?orderBy=`), `POST /product`, `PUT /product`, all JWT-protected and validated
@@ -125,7 +126,7 @@ writes the Repository pattern instead (Model + Repository + Service + Controller
 their DI bindings). A single component is `codegen:model`, `codegen:controller`,
 `codegen:test`, and so on.
 
-`./gluo openapi` rebuilds `public/docs/openapi.json`, which is the routing table —
+`php gluo openapi` rebuilds `public/docs/openapi.json`, which is the routing table —
 without it the new endpoints answer 404.
 
 ## 5. Hand edits
@@ -156,32 +157,34 @@ Because the model has the `OaDeletedAt` trait, `delete()` sets `deleted_at` and 
 disappears from `get()` / `all()`.
 
 **Price range** — codegen takes the length of `name` from the column, but a column type
-does not say which values a price may take. Add `minimum: 0, maximum: 99999999.99` to
+does not say which values a price may take. Add `maximum: 99999999.99, minimum: 0` to
 the `price` property in two places: the request body of `postProduct` in the controller
 and the property in `src/Model/Product.php` (the schema `putProduct` validates against).
 
 ```php
-new OA\Property(property: "price", type: "number", format: "double", minimum: 0, maximum: 99999999.99),
+new OA\Property(property: "price", type: "number", format: "double", maximum: 99999999.99, minimum: 0),
 ```
 
-Run `./gluo openapi` again. The API now answers 400 to a name over 100 characters or a
-price outside the range, on create and on update, before anything reaches the database.
+Run `php gluo openapi` again. The API now answers 400 to an empty name, a name over 100
+characters or a price outside the range, on create and on update, before anything reaches
+the database.
 
-**Tests** — add `testSoftDelete` and `testPostInvalidProductIsRejected` to
-`tests/Controller/ProductTest.php`.
+**Tests** — add `testSoftDelete` and `testInvalidProductIsRejectedByTheServer` to
+`tests/Controller/ProductTest.php`. The second sends five invalid payloads, on `POST` and
+`PUT`, to the server, and checks the 400 and that the table did not change.
 
 **Frontend** — codegen covers the API only; the screen is written by hand:
 
-- `frontend/src/pages/Products.jsx` — table, create/edit modal and delete, using the
-  bundled `api` client and `ui` components
+- `frontend/src/pages/Products.jsx` — table sorted by name, paging, create/edit modal and
+  delete, using the bundled `api` client and `ui` components (including `Pagination`)
 - `frontend/src/App.jsx` — `<Route path="/products" element={<Products />} />`
 - `frontend/src/components/AppNav.jsx` — the `Products` menu entry
 
 ## 6. Test and run
 
 ```bash
-./gluo --env=dev list --check
-composer test
+php gluo --env=dev list --check
+php gluo test
 composer psalm
 docker compose up -d --build frontend
 ```

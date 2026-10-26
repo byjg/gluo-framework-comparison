@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {Edit3, Plus, Trash2} from 'lucide-react';
+import {ArrowDown, ArrowUp, Edit3, Plus, Trash2} from 'lucide-react';
 import {api} from '@/lib/api';
-import {Alert, Button, Card, EmptyState, Field, Input, Modal, PageHeader} from '@/components/ui';
+import {Alert, Button, Card, EmptyState, Field, Input, Modal, PageHeader, Pagination} from '@/components/ui';
 
 const blankForm = { name: '', price: '' };
 
@@ -12,11 +12,16 @@ export default function Products() {
   const [error, setError] = useState('');
   const [formError, setFormError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  // Paged and sorted by the API (?page=&size=&orderBy=), so every product can be reached.
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(20);
+  const [descending, setDescending] = useState(false);
 
   const load = async () => {
     setError('');
     try {
-      const data = await api.request('/product', { method: 'GET' });
+      const params = new URLSearchParams({ page, size, orderBy: descending ? 'name desc' : 'name' });
+      const data = await api.request(`/product?${params}`, { method: 'GET' });
       setProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       setError(err.message);
@@ -25,7 +30,12 @@ export default function Products() {
 
   useEffect(() => {
     load();
-  }, []);
+  }, [page, size, descending]);
+
+  const changeSize = (newSize) => {
+    setSize(newSize);
+    setPage(0);
+  };
 
   const open = (product = null) => {
     setEditing(product);
@@ -77,12 +87,17 @@ export default function Products() {
         {error && <Alert className="mb-4">{error}</Alert>}
 
         {products.length === 0 ? (
-          <EmptyState title="No products yet" />
+          <EmptyState title={page === 0 ? 'No products yet' : 'No more products'} />
         ) : (
           <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
               <tr>
-                <th scope="col" className="px-4 py-3 font-semibold">Name</th>
+                <th scope="col" className="px-4 py-3 font-semibold" aria-sort={descending ? 'descending' : 'ascending'}>
+                  <button type="button" className="inline-flex items-center gap-1 uppercase" onClick={() => setDescending(!descending)}>
+                    Name
+                    {descending ? <ArrowDown size={12} /> : <ArrowUp size={12} />}
+                  </button>
+                </th>
                 <th scope="col" className="px-4 py-3 font-semibold">Price</th>
                 <th scope="col" className="px-4 py-3 text-right font-semibold">Actions</th>
               </tr>
@@ -106,6 +121,17 @@ export default function Products() {
               ))}
             </tbody>
           </table>
+        )}
+
+        {(products.length > 0 || page > 0) && (
+          <Pagination
+            className="mt-4"
+            page={page}
+            size={size}
+            count={products.length}
+            onPageChange={setPage}
+            onSizeChange={changeSize}
+          />
         )}
       </Card>
 

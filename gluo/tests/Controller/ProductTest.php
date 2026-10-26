@@ -4,8 +4,6 @@ namespace Tests\Controller;
 
 use ByJG\RestServer\Exception\Error400Exception;
 use ByJG\AnyDataset\Db\DatabaseExecutor;
-use ByJG\ApiTools\Exception\NotMatchedException;
-use ByJG\ApiTools\Exception\RequiredArgumentNotFound;
 use ByJG\Config\Config;
 use ByJG\RestServer\Exception\Error404Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -281,40 +279,54 @@ class ProductTest extends BaseApiTestCase
 
     public static function invalidProductProvider(): array
     {
-        return [
+        $cases = [
             'name longer than the column' => [['name' => str_repeat('a', 101), 'price' => 1], "is longer than maxLength 100"],
+            'empty name' => [['name' => '', 'price' => 1], "is shorter than minLength 1"],
             'negative price' => [['name' => 'Keyboard', 'price' => -5], "is less than minimum 0"],
             'price above the column range' => [['name' => 'Keyboard', 'price' => 100000000], "is greater than maximum 99999999.99"],
             'missing name' => [['price' => 1], "Required property 'name'"],
         ];
+
+        $result = [];
+        foreach (['POST', 'PUT'] as $method) {
+            foreach ($cases as $name => [$payload, $message]) {
+                $result["$method, $name"] = [$method, $payload, $message];
+            }
+        }
+        return $result;
     }
 
     /**
-     * The limits come from the OpenAPI spec: maxLength from the column, written by codegen,
-     * and the price range added by hand. The contract check refuses the payload before it is stored.
+     * The limits come from the OpenAPI spec: maxLength and minLength from the column, written
+     * by codegen, and the price range added by hand. The request is sent without the spec, so
+     * the test client does not stop it: it reaches #[ValidateRequest] in the controller, which
+     * answers 400, and nothing is written.
      */
     #[DataProvider('invalidProductProvider')]
-    public function testPostInvalidProductIsRejected(array $payload, string $message)
+    public function testInvalidProductIsRejectedByTheServer(string $method, array $payload, string $message)
     {
         $token = json_decode($this->sendRequest(Credentials::requestLogin(Credentials::getAdminUser()))->getBody()->getContents(), true)['token'];
         $executor = Config::get(DatabaseExecutor::class);
-        $before = $executor->getScalar('select count(*) from product');
+        if ($method === 'PUT') {
+            $payload['id'] = $executor->executeAndGetId("insert into product (name, price) values ('Keyboard', 49.9)");
+        }
+        $before = $executor->getIterator('select id, name, price from product order by id')->toArray();
+
+        $request = new FakeApiRequester();
+        $request
+            ->withPsr7Request($this->getPsr7Request())
+            ->withMethod($method)
+            ->withPath('/product')
+            ->withRequestBody(json_encode($payload))
+            ->withRequestHeader(['Authorization' => "Bearer $token"]);
 
         try {
-            $this->sendRequest(
-                (new FakeApiRequester())
-                    ->withPsr7Request($this->getPsr7Request())
-                    ->withMethod('POST')
-                    ->withPath('/product')
-                    ->withRequestBody(json_encode($payload))
-                    ->withRequestHeader(['Authorization' => "Bearer $token"])
-                    ->expectStatus(200)
-            );
+            $request->send();
             $this->fail('The invalid product was accepted');
-        } catch (NotMatchedException | RequiredArgumentNotFound $ex) {
+        } catch (Error400Exception $ex) {
             $this->assertStringContainsString($message, $ex->getMessage());
         }
 
-        $this->assertSame($before, $executor->getScalar('select count(*) from product'));
+        $this->assertSame($before, $executor->getIterator('select id, name, price from product order by id')->toArray());
     }
 }

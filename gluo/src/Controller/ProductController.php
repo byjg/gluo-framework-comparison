@@ -156,8 +156,8 @@ class ProductController
             required: [ "name", "price" ],
             properties: [
 
-                new OA\Property(property: "name", type: "string", format: "string", maxLength: 100),
-                new OA\Property(property: "price", type: "number", format: "double", minimum: 0, maximum: 99999999.99),
+                new OA\Property(property: "name", type: "string", format: "string", maxLength: 100, minLength: 1),
+                new OA\Property(property: "price", type: "number", format: "double", maximum: 99999999.99, minimum: 0),
             ]
         )
     )]
