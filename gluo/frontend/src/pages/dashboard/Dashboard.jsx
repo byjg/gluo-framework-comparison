@@ -10,7 +10,7 @@ export default function Dashboard() {
 
   const cards = [
     { to: '/profile', label: 'Your Profile', desc: 'View and edit your account', icon: User },
-    { to: `${BASE_URL}/docs/`, label: 'API Docs', desc: 'Swagger UI', icon: BookOpen, external: true },
+    { to: `${BASE_URL}/docs/`, label: 'API Docs', desc: 'API reference', icon: BookOpen, external: true },
   ];
 
   return (
