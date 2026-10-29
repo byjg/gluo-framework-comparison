@@ -1,8 +1,8 @@
 {
     "openapi": "3.1.0",
     "info": {
-        "title": "API Title",
-        "description": "Information about the API",
+        "title": "Gluo API",
+        "description": "REST API built on Gluo",
         "termsOfService": "http://localhost:8080/terms/",
         "contact": {
             "email": "someone@example.com"
@@ -92,7 +92,7 @@
                 "operationId": "POST::/refreshtoken::App\\Controller\\LoginController::refreshToken",
                 "responses": {
                     "200": {
-                        "description": "The object rto be created",
+                        "description": "The refreshed token",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -124,7 +124,7 @@
                         }
                     },
                     "401": {
-                        "description": "Não autorizado",
+                        "description": "Unauthorized",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -146,7 +146,7 @@
                 "tags": [
                     "Login"
                 ],
-                "summary": "Initialize the Password Request",
+                "summary": "Request a password reset code by email",
                 "operationId": "POST::/login/resetrequest::App\\Controller\\LoginController::postResetRequest",
                 "requestBody": {
                     "description": "The email to have the password reset",
@@ -193,7 +193,7 @@
                 "tags": [
                     "Login"
                 ],
-                "summary": "Initialize the Password Request",
+                "summary": "Confirm the password reset code",
                 "operationId": "POST::/login/confirmcode::App\\Controller\\LoginController::postConfirmCode",
                 "requestBody": {
                     "description": "The email and code to confirm the password reset",
@@ -258,7 +258,7 @@
                 "tags": [
                     "Login"
                 ],
-                "summary": "Initialize the Password Request",
+                "summary": "Set a new password with the confirmed reset token",
                 "operationId": "POST::/login/resetpassword::App\\Controller\\LoginController::postResetPassword",
                 "requestBody": {
                     "description": "The email and the new password",
@@ -883,19 +883,19 @@
                     "error": {
                         "properties": {
                             "type": {
-                                "description": "A class de Exceção",
+                                "description": "The exception class",
                                 "type": "string"
                             },
                             "message": {
-                                "description": "A mensagem de erro",
+                                "description": "The error message",
                                 "type": "string"
                             },
                             "file": {
-                                "description": "O arquivo que gerou o erro",
+                                "description": "The file that raised the error",
                                 "type": "string"
                             },
                             "line": {
-                                "description": "A linha do erro",
+                                "description": "The line of the error",
                                 "type": "integer"
                             }
                         },
@@ -904,16 +904,16 @@
                 },
                 "type": "object",
                 "externalDocs": {
-                    "description": "Find out more about Swagger",
+                    "description": "API reference",
                     "url": "http://localhost:8080/docs"
                 }
             }
         },
         "securitySchemes": {
             "jwt-token": {
-                "type": "apiKey",
-                "name": "Authorization",
-                "in": "header"
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },

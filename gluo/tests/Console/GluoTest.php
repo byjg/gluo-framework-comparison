@@ -9,7 +9,7 @@ use App\Command\Commands;
 use Tests\Controller\BaseApiTestCase;
 
 /**
- * The gluo wiring this project owns: the Commands provider and Builder\Scripts, against
+ * The php gluo wiring this project owns: the Commands provider and Builder\Scripts, against
  * the real container and the migrated test database.
  * Extends BaseApiTestCase to reuse the database reset and environment guard.
  */
