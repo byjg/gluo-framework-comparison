@@ -1,0 +1,20 @@
+name: api-codeigniter
+
+services:
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqlp455w0rd
+      MYSQL_DATABASE: app
+      TZ: UTC
+    ports:
+      - "3315:3306"
+    volumes:
+      - database_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pmysqlp455w0rd"]
+      interval: 2s
+      retries: 30
+
+volumes:
+  database_data:

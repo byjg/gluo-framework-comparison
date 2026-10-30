@@ -54,6 +54,7 @@ from an empty directory. The ports do not overlap, so they can all run side by s
 |---|---|---|---|
 | [`frameworks/api/laravel/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/api/laravel) ([guide](docs/api-laravel.md)) | Laravel 13, Eloquent, Passport (JWT access tokens) | http://localhost:7081 | http://localhost:9081 |
 | [`frameworks/api/symfony/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/api/symfony) ([guide](docs/api-symfony.md)) | Symfony 8.1, Doctrine ORM, lexik JWT | http://localhost:7082 | http://localhost:9082 |
+| [`frameworks/api/codeigniter/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/api/codeigniter) ([guide](docs/api-codeigniter.md)) | CodeIgniter 4.7, Model + Query Builder, Shield JWT | http://localhost:7084 | http://localhost:9084 |
 
 ## Side by side
 

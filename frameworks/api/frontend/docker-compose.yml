@@ -23,3 +23,10 @@ services:
       API_BASE_URL: "http://localhost:9082"
     ports:
       - "7082:8080"
+
+  codeigniter:
+    <<: *spa
+    environment:
+      API_BASE_URL: "http://localhost:9084"
+    ports:
+      - "7084:8080"
