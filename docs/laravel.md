@@ -13,6 +13,7 @@ Requirements: PHP >= 8.3, Composer, Docker.
 ## 1. Create the project
 
 ```bash
+cd frameworks/fullstack
 composer create-project laravel/react-starter-kit laravel --stability=dev
 cd laravel
 ```

@@ -14,6 +14,7 @@ Requirements: PHP >= 8.2 with `pdo_mysql` and `intl`, Composer, Docker (for MySQ
 ## 1. Create the project
 
 ```bash
+cd frameworks/fullstack
 composer create-project cakephp/app cakephp
 cd cakephp
 ```

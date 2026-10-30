@@ -21,6 +21,7 @@ Requirements: Docker. PHP and Composer run inside the container.
 ## 1. Create the project
 
 ```bash
+cd frameworks/fullstack
 git clone --depth 1 https://github.com/dunglas/symfony-docker.git symfony
 cd symfony
 rm -rf .git

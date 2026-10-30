@@ -3,7 +3,7 @@
 /**
  * The API contract Gluo's SPA relies on, checked against any of the builds:
  *
- *   php api/contract-test.php http://localhost:9081 http://localhost:7081
+ *   php frameworks/api/contract-test.php http://localhost:9081 http://localhost:7081
  *
  * The first argument is the API, the second the origin of its SPA (for CORS).
  * It logs in with the seed users, reads, creates, updates and deletes a product, and

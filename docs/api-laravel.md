@@ -26,11 +26,12 @@ So this build uses Passport: first-party, and the SPA works without a change.
 ## 1. Create the project and its database
 
 ```bash
-composer create-project laravel/laravel api/laravel
-cd api/laravel
+cd frameworks/api
+composer create-project laravel/laravel laravel
+cd laravel
 ```
 
-`api/laravel/docker-compose.yml`, MySQL on 3312 so it runs next to the other builds. The
+`frameworks/api/laravel/docker-compose.yml`, MySQL on 3312 so it runs next to the other builds. The
 `name` matters: without it Compose names the project after the folder, `laravel`, the same
 as the `laravel/` build, and replaces that build's database container.
 
@@ -232,7 +233,7 @@ php artisan migrate:fresh --seed
 php artisan serve --port=9081
 ```
 
-The SPA, Gluo's frontend unchanged, from `api/frontend`:
+The SPA, Gluo's frontend unchanged, from `frameworks/api/frontend`:
 
 ```bash
 cd ../frontend
@@ -245,7 +246,7 @@ Open http://localhost:7081 and log in with `admin@example.com` / `!P4ssw0rdstr!`
 Check the API against the contract the SPA relies on, from the repository root:
 
 ```bash
-php api/contract-test.php http://localhost:9081 http://localhost:7081
+php frameworks/api/contract-test.php http://localhost:9081 http://localhost:7081
 ```
 
 ## Endpoints

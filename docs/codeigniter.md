@@ -14,6 +14,7 @@ Requirements: PHP >= 8.2 with `mysqli` and `intl`, Composer, Docker (for MySQL o
 ## 1. Create the project and add Shield
 
 ```bash
+cd frameworks/fullstack
 composer create-project codeigniter4/appstarter codeigniter
 cd codeigniter
 composer require codeigniter4/shield

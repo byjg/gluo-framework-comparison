@@ -20,7 +20,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    // The SPA of api/frontend
+    // The SPA of frameworks/api/frontend
     'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:7081')],
 
     'allowed_origins_patterns' => [],
