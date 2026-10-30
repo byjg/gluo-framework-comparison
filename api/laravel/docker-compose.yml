@@ -1,0 +1,20 @@
+name: api-laravel
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqlp455w0rd
+      MYSQL_DATABASE: laravel
+      TZ: UTC
+    ports:
+      - "3312:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-pmysqlp455w0rd"]
+      interval: 2s
+      retries: 30
+
+volumes:
+  mysql-data:
