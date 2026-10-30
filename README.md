@@ -53,6 +53,7 @@ from an empty directory. The ports do not overlap, so they can all run side by s
 | API build | Stack | SPA | API |
 |---|---|---|---|
 | [`frameworks/api/laravel/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/api/laravel) ([guide](docs/api-laravel.md)) | Laravel 13, Eloquent, Passport (JWT access tokens) | http://localhost:7081 | http://localhost:9081 |
+| [`frameworks/api/symfony/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/api/symfony) ([guide](docs/api-symfony.md)) | Symfony 8.1, Doctrine ORM, lexik JWT | http://localhost:7082 | http://localhost:9082 |
 
 ## Side by side
 
