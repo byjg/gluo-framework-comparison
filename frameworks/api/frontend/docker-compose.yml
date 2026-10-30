@@ -30,3 +30,10 @@ services:
       API_BASE_URL: "http://localhost:9084"
     ports:
       - "7084:8080"
+
+  cakephp:
+    <<: *spa
+    environment:
+      API_BASE_URL: "http://localhost:9083"
+    ports:
+      - "7083:8080"
