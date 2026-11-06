@@ -1,0 +1,39 @@
+# Gluo's React SPA (../../gluo/frontend), unchanged, once per API: the image reads
+# API_BASE_URL when the container starts and writes it to /config.js. The address is the
+# one the browser reaches, the API on the host.
+name: api-frontend
+
+x-spa: &spa
+  image: gluo-frontend:dev
+  build:
+    context: ../../gluo
+    dockerfile: docker/Dockerfile-html
+
+services:
+  laravel:
+    <<: *spa
+    environment:
+      API_BASE_URL: "http://localhost:9081"
+    ports:
+      - "7081:8080"
+
+  symfony:
+    <<: *spa
+    environment:
+      API_BASE_URL: "http://localhost:9082"
+    ports:
+      - "7082:8080"
+
+  codeigniter:
+    <<: *spa
+    environment:
+      API_BASE_URL: "http://localhost:9084"
+    ports:
+      - "7084:8080"
+
+  cakephp:
+    <<: *spa
+    environment:
+      API_BASE_URL: "http://localhost:9083"
+    ports:
+      - "7083:8080"

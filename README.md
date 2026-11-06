@@ -31,15 +31,31 @@ Docker setup: both run PHP on the host with MySQL from a hand-written compose fi
 
 | Directory                                                                                             | Stack                                                                                                 | Open                                                                       | MySQL port | Step-by-step guide                                   |
 |-------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|------------|------------------------------------------------------|
-| [`gluo/`](https://github.com/byjg/gluo-framework-comparison/tree/master/gluo)                         | byjg/gluo 7.0, MicroOrm (ActiveRecord), JWT API + React SPA                                           | http://localhost:7080 or https://localhost:7443 (API and Swagger on :8080) | 3306       | [docs/gluo.md](docs/gluo.md)                         |
-| [`laravel/`](https://github.com/byjg/gluo-framework-comparison/tree/master/laravel)                   | Laravel 13, Eloquent, React starter kit (Inertia + Fortify), Sail                                     | http://localhost:8081                                                      | 3307       | [docs/laravel.md](docs/laravel.md)                   |
-| [`symfony-official/`](https://github.com/byjg/gluo-framework-comparison/tree/master/symfony-official) | Symfony 8.1, Doctrine ORM, Twig, form login; official packages only, PHP on the host, MySQL in Docker | http://localhost:8083/product                                              | 3309       | [docs/symfony-official.md](docs/symfony-official.md) |
-| [`symfony/`](https://github.com/byjg/gluo-framework-comparison/tree/master/symfony)                   | the same, on the Symfony Docker template (FrankenPHP) with the Gedmo soft-delete bundle               | http://localhost:8082/product                                              | 3308       | [docs/symfony.md](docs/symfony.md)                   |
-| [`cakephp/`](https://github.com/byjg/gluo-framework-comparison/tree/master/cakephp)                   | CakePHP 5.4, CakePHP ORM, Authentication plugin, screens baked from the table, Muffin/Trash soft delete; PHP on the host, MySQL in Docker | http://localhost:8084                                              | 3310       | [docs/cakephp.md](docs/cakephp.md)                   |
-| [`codeigniter/`](https://github.com/byjg/gluo-framework-comparison/tree/master/codeigniter)           | CodeIgniter 4.7, Model + Query Builder, Shield login, plain PHP views; PHP on the host, MySQL in Docker | http://localhost:8085                                                     | 3311       | [docs/codeigniter.md](docs/codeigniter.md)           |
+| [`frameworks/gluo/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/gluo)                         | byjg/gluo 7.0, MicroOrm (ActiveRecord), JWT API + React SPA                                           | http://localhost:7080 or https://localhost:7443 (API and Swagger on :8080) | 3306       | [docs/gluo.md](docs/gluo.md)                         |
+| [`frameworks/fullstack/laravel/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/fullstack/laravel)                   | Laravel 13, Eloquent, React starter kit (Inertia + Fortify), Sail                                     | http://localhost:8081                                                      | 3307       | [docs/laravel.md](docs/laravel.md)                   |
+| [`frameworks/fullstack/symfony-official/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/fullstack/symfony-official) | Symfony 8.1, Doctrine ORM, Twig, form login; official packages only, PHP on the host, MySQL in Docker | http://localhost:8083/product                                              | 3309       | [docs/symfony-official.md](docs/symfony-official.md) |
+| [`frameworks/fullstack/symfony/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/fullstack/symfony)                   | the same, on the Symfony Docker template (FrankenPHP) with the Gedmo soft-delete bundle               | http://localhost:8082/product                                              | 3308       | [docs/symfony.md](docs/symfony.md)                   |
+| [`frameworks/fullstack/cakephp/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/fullstack/cakephp)                   | CakePHP 5.4, CakePHP ORM, Authentication plugin, screens baked from the table, Muffin/Trash soft delete; PHP on the host, MySQL in Docker | http://localhost:8084                                              | 3310       | [docs/cakephp.md](docs/cakephp.md)                   |
+| [`frameworks/fullstack/codeigniter/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/fullstack/codeigniter)           | CodeIgniter 4.7, Model + Query Builder, Shield login, plain PHP views; PHP on the host, MySQL in Docker | http://localhost:8085                                                     | 3311       | [docs/codeigniter.md](docs/codeigniter.md)           |
 
 Each guide lists every command and every hand edit, so any of them can be rebuilt
 from an empty directory. The ports do not overlap, so they can all run side by side.
+
+`frameworks/gluo/` is an API with a separate SPA. The other frameworks are built twice:
+
+- `frameworks/fullstack/`: each one the way it builds a whole application (server-rendered
+  pages, or Inertia for Laravel).
+- `frameworks/api/`: each one as a JSON API only, in front of Gluo's SPA, unchanged
+  (`frameworks/api/frontend` serves it once per API). These compare like for like with
+  Gluo. `frameworks/api/contract-test.php` checks a build against the contract the SPA
+  relies on.
+
+| API build | Stack | SPA | API |
+|---|---|---|---|
+| [`frameworks/api/laravel/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/api/laravel) ([guide](docs/api-laravel.md)) | Laravel 13, Eloquent, Passport (JWT access tokens) | http://localhost:7081 | http://localhost:9081 |
+| [`frameworks/api/symfony/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/api/symfony) ([guide](docs/api-symfony.md)) | Symfony 8.1, Doctrine ORM, lexik JWT | http://localhost:7082 | http://localhost:9082 |
+| [`frameworks/api/cakephp/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/api/cakephp) ([guide](docs/api-cakephp.md)) | CakePHP 5.4, CakePHP ORM, Authentication plugin (Jwt), Muffin/Trash | http://localhost:7083 | http://localhost:9083 |
+| [`frameworks/api/codeigniter/`](https://github.com/byjg/gluo-framework-comparison/tree/master/frameworks/api/codeigniter) ([guide](docs/api-codeigniter.md)) | CodeIgniter 4.7, Model + Query Builder, Shield JWT | http://localhost:7084 | http://localhost:9084 |
 
 ## Side by side
 
@@ -130,31 +146,31 @@ fresh clone:
 
 ```bash
 # Gluo: API on :8080, frontend on :7080 and https://localhost:7443
-cd gluo && composer install && docker compose up -d && php gluo --env=dev migrate:reset
+cd frameworks/gluo && composer install && docker compose up -d && php gluo --env=dev migrate:reset
 
 # Laravel: http://localhost:8081
-cd laravel && composer install && cp .env.example .env && php artisan key:generate
+cd frameworks/fullstack/laravel && composer install && cp .env.example .env && php artisan key:generate
 ./vendor/bin/sail up -d
 ./vendor/bin/sail npm install && ./vendor/bin/sail npm run build
 ./vendor/bin/sail artisan migrate:fresh --seed
 
 # Symfony, official packages only: http://localhost:8083/product
-cd symfony-official && composer install && docker compose up -d --wait
+cd frameworks/fullstack/symfony-official && composer install && docker compose up -d --wait
 php bin/console doctrine:migrations:migrate -n && php bin/console doctrine:fixtures:load -n
 php -S 0.0.0.0:8083 -t public
 
 # Symfony, Docker template: http://localhost:8082/product
 # (the container installs the dependencies and runs the migrations when it starts)
-cd symfony && docker compose up -d --wait
+cd frameworks/fullstack/symfony && docker compose up -d --wait
 docker compose exec php bin/console doctrine:fixtures:load -n
 
 # CakePHP: http://localhost:8084
-cd cakephp && composer install && docker compose up -d --wait
+cd frameworks/fullstack/cakephp && composer install && docker compose up -d --wait
 bin/cake migrations migrate && bin/cake seeds run
 bin/cake server -H 0.0.0.0 -p 8084
 
 # CodeIgniter: http://localhost:8085
-cd codeigniter && composer install && cp .env.example .env && docker compose up -d --wait
+cd frameworks/fullstack/codeigniter && composer install && cp .env.example .env && docker compose up -d --wait
 php spark migrate --all && php spark db:seed ProductSeeder
 php spark serve --host 0.0.0.0 --port 8085
 ```

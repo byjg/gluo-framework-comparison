@@ -18,6 +18,7 @@ Requirements: PHP >= 8.4 with `pdo_mysql`, Composer, Docker (for MySQL only).
 ## 1. Create the project
 
 ```bash
+cd frameworks/fullstack
 composer create-project symfony/skeleton symfony-official
 cd symfony-official
 composer config extra.symfony.docker true

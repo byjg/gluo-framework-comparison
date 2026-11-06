@@ -18,7 +18,7 @@ project declares in `.claude/settings.json`.
 ## 1. Create the project
 
 The installer asks a few questions. To answer them up front, put a `setup.json` next to
-where the project will be created (this repository keeps it at the root):
+where the project will be created (this repository keeps it in `frameworks/`):
 
 ```json
 {
@@ -30,6 +30,7 @@ where the project will be created (this repository keeps it at the root):
 ```
 
 ```bash
+cd frameworks
 composer create-project byjg/gluo gluo ^7.0 --stability=dev
 cd gluo
 ```
