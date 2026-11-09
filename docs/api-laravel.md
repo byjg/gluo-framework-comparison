@@ -6,7 +6,7 @@ title: "API: Laravel"
 # API: Laravel
 
 Laravel 13 as a JSON API only, for Gluo's React SPA, unchanged: Eloquent, Passport (the
-first-party OAuth2 server) for the token, MySQL 8.0 in Docker, PHP on the host.
+first-party OAuth2 server) for the token, MySQL 8.4 in Docker, PHP on the host.
 
 Requirements: PHP >= 8.3, Composer, Docker.
 
@@ -40,7 +40,7 @@ name: api-laravel
 
 services:
   mysql:
-    image: mysql:8.0
+    image: mysql:8.4
     environment:
       MYSQL_ROOT_PASSWORD: mysqlp455w0rd
       MYSQL_DATABASE: laravel
