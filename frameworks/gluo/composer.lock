@@ -63,16 +63,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.403.0",
+            "version": "3.403.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "effd01087c371988150d882e856889ffd2b5d728"
+                "reference": "608a2c79f57fd3dd54d0dff1e98e9c124f3cb96c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/effd01087c371988150d882e856889ffd2b5d728",
-                "reference": "effd01087c371988150d882e856889ffd2b5d728",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/608a2c79f57fd3dd54d0dff1e98e9c124f3cb96c",
+                "reference": "608a2c79f57fd3dd54d0dff1e98e9c124f3cb96c",
                 "shasum": ""
             },
             "require": {
@@ -154,10 +154,10 @@
             "support": {
                 "forum": "https://github.com/aws/aws-sdk-php/discussions",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.403.0"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.403.1"
             },
-            "time": "2026-11-05T19:10:30+00:00",
-            "published-time": "2026-11-05T19:18:50+00:00"
+            "time": "2026-11-06T19:34:26+00:00",
+            "published-time": "2026-11-06T19:42:21+00:00"
         },
         {
             "name": "byjg/anydataset",
@@ -584,12 +584,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/byjg/php-mailwrapper.git",
-                "reference": "9fb42b49360c2014b1154021fda16329a67f1df1"
+                "reference": "404458bfedf5e731b9f600b29192c11a747f1ce9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/byjg/php-mailwrapper/zipball/9fb42b49360c2014b1154021fda16329a67f1df1",
-                "reference": "9fb42b49360c2014b1154021fda16329a67f1df1",
+                "url": "https://api.github.com/repos/byjg/php-mailwrapper/zipball/404458bfedf5e731b9f600b29192c11a747f1ce9",
+                "reference": "404458bfedf5e731b9f600b29192c11a747f1ce9",
                 "shasum": ""
             },
             "require": {
@@ -619,8 +619,8 @@
                 "issues": "https://github.com/byjg/php-mailwrapper/issues",
                 "source": "https://github.com/byjg/php-mailwrapper/tree/7.0"
             },
-            "time": "2026-10-25T23:29:44+00:00",
-            "published-time": "2026-10-25T23:50:14+00:00"
+            "time": "2026-11-06T17:33:00+00:00",
+            "published-time": "2026-11-06T17:33:06+00:00"
         },
         {
             "name": "byjg/micro-orm",
@@ -719,12 +719,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/byjg/php-restserver.git",
-                "reference": "2ed72eaa030c6b7b025c820130ea03eaea791381"
+                "reference": "56643fed8ba969879ace7cd90c24355c681f5fd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/byjg/php-restserver/zipball/2ed72eaa030c6b7b025c820130ea03eaea791381",
-                "reference": "2ed72eaa030c6b7b025c820130ea03eaea791381",
+                "url": "https://api.github.com/repos/byjg/php-restserver/zipball/56643fed8ba969879ace7cd90c24355c681f5fd3",
+                "reference": "56643fed8ba969879ace7cd90c24355c681f5fd3",
                 "shasum": ""
             },
             "require": {
@@ -764,8 +764,8 @@
                 "issues": "https://github.com/byjg/php-restserver/issues",
                 "source": "https://github.com/byjg/php-restserver/tree/7.0"
             },
-            "time": "2026-11-06T14:02:51+00:00",
-            "published-time": "2026-11-06T14:04:04+00:00"
+            "time": "2026-11-08T18:27:26+00:00",
+            "published-time": "2026-11-08T18:28:26+00:00"
         },
         {
             "name": "byjg/scriptify",
@@ -1737,16 +1737,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v7.1.1",
+            "version": "v7.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "1bc1716a507a65e039d4ac9d9adebbbd0d346e15"
+                "reference": "f5eb50148734d03bbbb81825c722c1889636d51a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/1bc1716a507a65e039d4ac9d9adebbbd0d346e15",
-                "reference": "1bc1716a507a65e039d4ac9d9adebbbd0d346e15",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/f5eb50148734d03bbbb81825c722c1889636d51a",
+                "reference": "f5eb50148734d03bbbb81825c722c1889636d51a",
                 "shasum": ""
             },
             "require": {
@@ -1761,7 +1761,7 @@
                 "php-parallel-lint/php-console-highlighter": "^1.0.0",
                 "php-parallel-lint/php-parallel-lint": "^1.3.2",
                 "phpcompatibility/php-compatibility": "^10.0.0@dev",
-                "squizlabs/php_codesniffer": "^3.13.5",
+                "squizlabs/php_codesniffer": "^3.13.6 || ^4.0.2",
                 "yoast/phpunit-polyfills": "^1.0.4"
             },
             "suggest": {
@@ -1807,7 +1807,7 @@
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
             "support": {
                 "issues": "https://github.com/PHPMailer/PHPMailer/issues",
-                "source": "https://github.com/PHPMailer/PHPMailer/tree/v7.1.1"
+                "source": "https://github.com/PHPMailer/PHPMailer/tree/v7.2.0"
             },
             "funding": [
                 {
@@ -1815,8 +1815,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-05-18T08:06:14+00:00",
-            "published-time": "2026-05-18T08:06:42+00:00"
+            "time": "2026-11-07T15:15:17+00:00",
+            "published-time": "2026-11-07T15:16:54+00:00"
         },
         {
             "name": "phpstan/phpdoc-parser",
@@ -2238,16 +2238,16 @@
         },
         {
             "name": "radebatz/type-info-extras",
-            "version": "1.0.12",
+            "version": "1.0.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DerManoMann/type-info-extras.git",
-                "reference": "7d0f772a5a78671b032cb28ab4d93d92ab222bec"
+                "reference": "925cc0472c1e4611df2a52c00852788ba6c1d7d4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DerManoMann/type-info-extras/zipball/7d0f772a5a78671b032cb28ab4d93d92ab222bec",
-                "reference": "7d0f772a5a78671b032cb28ab4d93d92ab222bec",
+                "url": "https://api.github.com/repos/DerManoMann/type-info-extras/zipball/925cc0472c1e4611df2a52c00852788ba6c1d7d4",
+                "reference": "925cc0472c1e4611df2a52c00852788ba6c1d7d4",
                 "shasum": ""
             },
             "require": {
@@ -2258,12 +2258,13 @@
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.70",
                 "phpstan/phpstan": "^2.1",
-                "phpunit/phpunit": "^11.0"
+                "phpunit/phpunit": "^11.0",
+                "rector/rector": "^2.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.x-dev"
+                    "dev-main": "1.x-dev"
                 }
             },
             "autoload": {
@@ -2294,10 +2295,10 @@
             ],
             "support": {
                 "issues": "https://github.com/DerManoMann/type-info-extras/issues",
-                "source": "https://github.com/DerManoMann/type-info-extras/tree/1.0.12"
+                "source": "https://github.com/DerManoMann/type-info-extras/tree/1.0.13"
             },
-            "time": "2026-11-05T21:27:53+00:00",
-            "published-time": "2026-11-05T21:28:02+00:00"
+            "time": "2026-11-08T23:54:24+00:00",
+            "published-time": "2026-11-08T23:57:05+00:00"
         },
         {
             "name": "symfony/console",
@@ -3540,16 +3541,16 @@
         },
         {
             "name": "zircote/swagger-php",
-            "version": "6.20.2",
+            "version": "6.20.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zircote/swagger-php.git",
-                "reference": "fb6f36bc3287e2843d8dc4dff5621b84924d5d8f"
+                "reference": "a1e9d2a9ee09277e4a1a31c26867cde00b896faf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zircote/swagger-php/zipball/fb6f36bc3287e2843d8dc4dff5621b84924d5d8f",
-                "reference": "fb6f36bc3287e2843d8dc4dff5621b84924d5d8f",
+                "url": "https://api.github.com/repos/zircote/swagger-php/zipball/a1e9d2a9ee09277e4a1a31c26867cde00b896faf",
+                "reference": "a1e9d2a9ee09277e4a1a31c26867cde00b896faf",
                 "shasum": ""
             },
             "require": {
@@ -3621,7 +3622,7 @@
             ],
             "support": {
                 "issues": "https://github.com/zircote/swagger-php/issues",
-                "source": "https://github.com/zircote/swagger-php/tree/6.20.2"
+                "source": "https://github.com/zircote/swagger-php/tree/6.20.3"
             },
             "funding": [
                 {
@@ -3629,8 +3630,8 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-11-03T19:52:48+00:00",
-            "published-time": "2026-11-03T19:53:17+00:00"
+            "time": "2026-11-08T19:40:34+00:00",
+            "published-time": "2026-11-08T19:42:55+00:00"
         }
     ],
     "packages-dev": [
@@ -4270,16 +4271,16 @@
         },
         {
             "name": "psalm/phar",
-            "version": "6.20.9",
+            "version": "6.20.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/psalm/phar.git",
-                "reference": "a0465306a64e7a77789329cc6d79dea6e1ec84bf"
+                "reference": "42f6faee9fb721ea0dcc60e095d1780135e3f11e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psalm/phar/zipball/a0465306a64e7a77789329cc6d79dea6e1ec84bf",
-                "reference": "a0465306a64e7a77789329cc6d79dea6e1ec84bf",
+                "url": "https://api.github.com/repos/psalm/phar/zipball/42f6faee9fb721ea0dcc60e095d1780135e3f11e",
+                "reference": "42f6faee9fb721ea0dcc60e095d1780135e3f11e",
                 "shasum": ""
             },
             "require": {
@@ -4299,10 +4300,10 @@
             "description": "Composer-based Psalm Phar",
             "support": {
                 "issues": "https://github.com/psalm/phar/issues",
-                "source": "https://github.com/psalm/phar/tree/6.20.9"
+                "source": "https://github.com/psalm/phar/tree/6.20.10"
             },
-            "time": "2026-11-05T00:45:46+00:00",
-            "published-time": "2026-11-05T00:45:58+00:00"
+            "time": "2026-11-07T17:30:07+00:00",
+            "published-time": "2026-11-07T17:30:20+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -5185,16 +5186,16 @@
         },
         {
             "name": "sebastian/version",
-            "version": "6.0.1",
+            "version": "6.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/version.git",
-                "reference": "9e935a16187e14f39b0e79910dabd614972cdb26"
+                "reference": "a8b6643a19ba6c8125a473623e45fb8cbb0e4159"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/version/zipball/9e935a16187e14f39b0e79910dabd614972cdb26",
-                "reference": "9e935a16187e14f39b0e79910dabd614972cdb26",
+                "url": "https://api.github.com/repos/sebastianbergmann/version/zipball/a8b6643a19ba6c8125a473623e45fb8cbb0e4159",
+                "reference": "a8b6643a19ba6c8125a473623e45fb8cbb0e4159",
                 "shasum": ""
             },
             "require": {
@@ -5227,7 +5228,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/version/issues",
                 "security": "https://github.com/sebastianbergmann/version/security/policy",
-                "source": "https://github.com/sebastianbergmann/version/tree/6.0.1"
+                "source": "https://github.com/sebastianbergmann/version/tree/6.0.2"
             },
             "funding": [
                 {
@@ -5247,8 +5248,8 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-04T05:50:08+00:00",
-            "published-time": "2026-10-04T05:50:36+00:00"
+            "time": "2026-11-09T06:30:55+00:00",
+            "published-time": "2026-11-09T06:31:20+00:00"
         },
         {
             "name": "staabm/side-effects-detector",
