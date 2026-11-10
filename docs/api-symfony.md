@@ -6,7 +6,7 @@ title: "API: Symfony"
 # API: Symfony
 
 Symfony 8.1 as a JSON API only, for Gluo's React SPA, unchanged: Doctrine ORM,
-`lexik/jwt-authentication-bundle` for the token, `nelmio/cors-bundle`, MySQL 8.0 in Docker,
+`lexik/jwt-authentication-bundle` for the token, `nelmio/cors-bundle`, MySQL 8.4 in Docker,
 PHP on the host.
 
 Requirements: PHP >= 8.4, Composer, Docker.
@@ -37,7 +37,7 @@ name: api-symfony
 
 services:
   database:
-    image: mysql:8.0
+    image: mysql:8.4
     environment:
       MYSQL_ROOT_PASSWORD: mysqlp455w0rd
       MYSQL_DATABASE: app
@@ -58,7 +58,7 @@ volumes:
 In `.env`:
 
 ```ini
-DATABASE_URL="mysql://root:mysqlp455w0rd@127.0.0.1:3313/app?serverVersion=8.0.32&charset=utf8mb4"
+DATABASE_URL="mysql://root:mysqlp455w0rd@127.0.0.1:3313/app?serverVersion=8.4&charset=utf8mb4"
 ```
 
 The CORS recipe already allows any `localhost` port (`CORS_ALLOW_ORIGIN`), so the SPA on

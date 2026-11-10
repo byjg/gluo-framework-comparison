@@ -6,7 +6,7 @@ title: Building it with Gluo
 # Gluo
 
 byjg/gluo 7.0 + MicroOrm + JWT API, with the bundled React frontend, on Docker with
-MySQL 8.0.
+MySQL 8.4.
 
 Requirements: PHP >= 8.3, Composer, Docker.
 

@@ -7,7 +7,7 @@ title: "API: CakePHP"
 
 CakePHP 5.4 as a JSON API only, for Gluo's React SPA, unchanged: the CakePHP ORM, the
 official Authentication plugin with its `Jwt` authenticator, `muffin/trash` for soft delete,
-MySQL 8.0 in Docker, PHP on the host.
+MySQL 8.4 in Docker, PHP on the host.
 
 Requirements: PHP >= 8.2, Composer, Docker.
 
@@ -40,7 +40,7 @@ name: api-cakephp
 
 services:
   database:
-    image: mysql:8.0
+    image: mysql:8.4
     environment:
       MYSQL_ROOT_PASSWORD: mysqlp455w0rd
       MYSQL_DATABASE: app

@@ -6,7 +6,7 @@ title: "API: CodeIgniter"
 # API: CodeIgniter
 
 CodeIgniter 4.7 as a JSON API only, for Gluo's React SPA, unchanged: its Model and Query
-Builder, Shield (the official authentication library) with its JWT authenticator, MySQL 8.0
+Builder, Shield (the official authentication library) with its JWT authenticator, MySQL 8.4
 in Docker, PHP on the host.
 
 Requirements: PHP >= 8.2, Composer, Docker.
@@ -43,7 +43,7 @@ name: api-codeigniter
 
 services:
   database:
-    image: mysql:8.0
+    image: mysql:8.4
     environment:
       MYSQL_ROOT_PASSWORD: mysqlp455w0rd
       MYSQL_DATABASE: app
